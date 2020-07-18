@@ -1,10 +1,9 @@
-<center>
-<h1>Terra<i>pukka</i></h1>
+<h1 align="center">Terra<i>pukka</i><br>
 <img src="https://img.shields.io/github/languages/code-size/svasandani/terrapukka" />
 <img src="https://img.shields.io/github/license/svasandani/terrapukka" />
 <img src="https://img.shields.io/github/last-commit/svasandani/terrapukka" />
 <img src="https://img.shields.io/github/go-mod/go-version/svasandani/terrapukka" />
-</center>
+</h1>
 <br>
 A Go OAuth provider for TerraLing. Currently in development.
 
