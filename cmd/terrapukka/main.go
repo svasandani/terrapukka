@@ -25,17 +25,25 @@ type HTTPOk struct {
   Msg string `json:"message"`
 }
 
+// @TODO #1 create Authorization struct for OAuth
+// type AuthorizationToken struct
+
 var DB *sql.DB
 
 func main() {
   connectDB()
-
   defer DB.Close()
 
   http.HandleFunc("/", Handler)
 
   log.Fatal(http.ListenAndServe(":3000", nil))
 }
+
+/**************************************************************
+
+HANDLERS
+
+**************************************************************/
 
 func Handler(w http.ResponseWriter, r *http.Request) {
   if r.Method == http.MethodPost {
@@ -55,8 +63,14 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
   checkError("Error unmarshalling response JSON:", err)
 
+  // @TODO #1 get authorization token ?
   RegisterUser(user)
+
+  // @TODO #1 write authorization token
+  // w.Write(tokenJSON)
 }
+
+// Boilerplate HTTP responses for errors and OKs
 
 func respondError(w http.ResponseWriter, status int, msg string) {
   resp := HTTPError { Status: status, Msg: msg }
@@ -88,9 +102,15 @@ func respondOK(w http.ResponseWriter) {
   w.Write(json)
 }
 
-// DB Functions
+/**************************************************************
 
+DATABASE
+
+**************************************************************/
+
+// Connect to the database.
 func connectDB() {
+  // @TODO #2 secrets?
   db, err := sql.Open("mysql", "terrapukka:terrapukka@/terrapukka")
 
   checkError("Error opening connection to database:", err)
@@ -100,8 +120,11 @@ func connectDB() {
   checkError("Error establishing connection to database:", err)
 
   DB = db
+
+  // @QOL create table if not exists, maybe?
 }
 
+// Register the user into the database.
 func RegisterUser(user User) {
   ct, err := DB.Prepare("INSERT INTO users ( name, email, password ) VALUES ( ?, ?, ? )")
 
@@ -112,6 +135,13 @@ func RegisterUser(user User) {
   checkError("Error executing INSERT statement:", err)
 }
 
+/**************************************************************
+
+UTILITY
+
+**************************************************************/
+
+// Check for error; if not nil, print a message along with the error.
 func checkError(msg string, err error) {
   if err != nil {
     log.Println(msg)
