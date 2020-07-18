@@ -3,6 +3,7 @@ package main
 import (
   "log"
   "net/http"
+  "flag"
 
   "github.com/svasandani/terrapukka/internal/api"
   "github.com/svasandani/terrapukka/internal/db"
@@ -10,7 +11,15 @@ import (
 )
 
 func main() {
-  database := db.ConnectDB(db.DBConnection { User: "terrapukka", Password: "terrapukka", Database: "terrapukka" })
+  dbuser := flag.String("dbUser", "terrapukka", "Username for MySQL")
+  dbpass := flag.String("dbPass", "terrapukka", "Password for MySQL")
+  dbname := flag.String("dbName", "terrapukka", "Name of MySQL database")
+
+  port := flag.String("port", "3000", "Port to serve Terrapukka")
+
+  flag.Parse()
+
+  database := db.ConnectDB(db.Connection { User: *dbuser, Password: *dbpass, Database: *dbname })
   defer database.Close()
 
   web.Init()
@@ -20,5 +29,5 @@ func main() {
 
   http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./web/static"))))
 
-  log.Fatal(http.ListenAndServe(":3000", nil))
+  log.Fatal(http.ListenAndServe(":" + *port, nil))
 }
