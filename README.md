@@ -3,6 +3,7 @@
 <img src="https://img.shields.io/github/license/svasandani/terrapukka" />
 <img src="https://img.shields.io/github/last-commit/svasandani/terrapukka" />
 <img src="https://img.shields.io/github/go-mod/go-version/svasandani/terrapukka" />
+<br>
 </h1>
 <br>
 A Go OAuth provider for TerraLing. Currently in development.
@@ -20,7 +21,7 @@ A Go OAuth provider for TerraLing. Currently in development.
 - That's literally it
 
 ## Testing
-No tests have currently been written. See #3.
+No tests have currently been written. See [#3](https://github.com/svasandani/terrapukka/issues/3).
 
 ## Contributing
 Look through the issues and read through the code to see what needs help. Some tags:
