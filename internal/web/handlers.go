@@ -18,7 +18,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
     if r.URL.Path == "/sign_up" {
       // signUpHandler(w, r)
     } else if r.URL.Path == "/sign_in" {
-      signInHandler(w, r)
+      // signInHandler(w, r)
     } else {
       util.RespondError(w, 404, "The directory you're looking for couldn't be found.")
     }
@@ -27,7 +27,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-func signInHandler(w http.ResponseWriter, r *http.Request) {
+func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
   err := tmpl.ExecuteTemplate(w, "sign_in.html", nil)
