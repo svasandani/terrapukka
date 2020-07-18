@@ -1,4 +1,4 @@
-package api
+package db
 
 // User - export user struct for http
 type User struct {

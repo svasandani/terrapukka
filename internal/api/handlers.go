@@ -4,6 +4,9 @@ import (
     "net/http"
     "encoding/json"
     "io/ioutil"
+
+    "github.com/svasandani/terrapukka/internal/util"
+    "github.com/svasandani/terrapukka/internal/db"
 )
 
 type httpError struct {
@@ -17,17 +20,17 @@ type httpOK struct {
 
 /**************************************************************
 
-HANDLERS
+API HANDLERS
 
 **************************************************************/
 
-// Handler - export handler middleware to main
+// Handler - export api handler middleware to main
 func Handler(w http.ResponseWriter, r *http.Request) {
   // @TODO #4 how do we differentiate between Registrations and
   if r.Method == http.MethodPost {
-    if r.URL.Path == "/register" {
+    if r.URL.Path == "/api/register" {
       createUserHandler(w, r)
-    } else if r.URL.Path == "/auth" {
+    } else if r.URL.Path == "/api/auth" {
       authorizeUserHander(w, r)
     } else {
       respondError(w, 404, "Unknown endpoint: " + r.URL.Path)
@@ -40,15 +43,15 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
   body, err := ioutil.ReadAll(r.Body)
 
-  checkError("Error reading response body:", err)
+  util.CheckError("Error reading response body:", err)
 
-  user := User {}
+  user := db.User {}
   err = json.Unmarshal(body, &user)
 
-  checkError("Error unmarshalling response JSON:", err)
+  util.CheckError("Error unmarshalling response JSON:", err)
 
   // @TODO #1 get authorization token ?
-  registerUser(user)
+  db.RegisterUser(user)
 
   // @TODO #1 write authorization token
   // w.Write(tokenJSON)
@@ -57,15 +60,15 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 func authorizeUserHander(w http.ResponseWriter, r *http.Request) {
   body, err := ioutil.ReadAll(r.Body)
 
-  checkError("Error reading response body:", err)
+  util.CheckError("Error reading response body:", err)
 
-  auth := AuthorizationRequest {}
+  auth := db.AuthorizationRequest {}
   err = json.Unmarshal(body, &auth)
 
-  checkError("Error unmarshalling response JSON:", err)
+  util.CheckError("Error unmarshalling response JSON:", err)
 
   // @TODO #1 get authorization token ?
-  token := authorizeUser(auth)
+  token := db.AuthorizeUser(auth)
 
   // @TODO #1 write authorization token
   // w.Write(tokenJSON)
