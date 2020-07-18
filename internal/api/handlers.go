@@ -1,12 +1,12 @@
 package api
 
 import (
-    "net/http"
-    "encoding/json"
-    "io/ioutil"
+  "net/http"
+  "encoding/json"
+  "io/ioutil"
 
-    "github.com/svasandani/terrapukka/internal/util"
-    "github.com/svasandani/terrapukka/internal/db"
+  "github.com/svasandani/terrapukka/internal/util"
+  "github.com/svasandani/terrapukka/internal/db"
 )
 
 /**************************************************************
@@ -42,10 +42,26 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
   util.CheckError("Error unmarshalling response JSON:", err)
 
   // @TODO #1 get authorization token ?
-  db.RegisterUser(user)
+  token, err := db.RegisterUser(user)
+
+  util.CheckError("Error authorizing user:", err)
 
   // @TODO #1 write authorization token
   // w.Write(tokenJSON)
+  if token.Authorized {
+    json, err := json.Marshal(token)
+
+    if err != nil {
+      http.Error(w, err.Error(), http.StatusInternalServerError)
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+
+    w.Write(json)
+  } else {
+    util.RespondError(w, 400, err.Error())
+  }
 }
 
 func authorizeUserHander(w http.ResponseWriter, r *http.Request) {
@@ -53,13 +69,15 @@ func authorizeUserHander(w http.ResponseWriter, r *http.Request) {
 
   util.CheckError("Error reading response body:", err)
 
-  auth := db.AuthorizationRequest {}
-  err = json.Unmarshal(body, &auth)
+  user := db.User {}
+  err = json.Unmarshal(body, &user)
 
   util.CheckError("Error unmarshalling response JSON:", err)
 
   // @TODO #1 get authorization token ?
-  token := db.AuthorizeUser(auth)
+  token, err := db.AuthorizeUser(user)
+
+  util.CheckError("Error authorizing user:", err)
 
   // @TODO #1 write authorization token
   // w.Write(tokenJSON)
