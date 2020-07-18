@@ -7,6 +7,12 @@ type User struct {
   Password string `json:"password"`
 }
 
+type Client struct {
+  Name string `json:"name,omitempty"`
+  ID string `json:"id"`
+  Secret string `json:"secret"`
+}
+
 // @TODO #1 create Authorization struct for OAuth
 // AuthorizationToken - token for OAuth authorization
 type AuthorizationToken struct {
