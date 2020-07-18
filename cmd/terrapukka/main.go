@@ -16,6 +16,14 @@ type User struct {
   Password string `json:"password"`
 }
 
+type AuthorizationRequest struct {
+  Email string `json:"email"`
+  Password string `json:"password"`
+}
+
+// @TODO #1 create Authorization struct for OAuth
+// type AuthorizationToken struct
+
 type HTTPError struct {
   Status int `json:"status"`
   Msg string `json:"message"`
@@ -24,9 +32,6 @@ type HTTPError struct {
 type HTTPOk struct {
   Msg string `json:"message"`
 }
-
-// @TODO #1 create Authorization struct for OAuth
-// type AuthorizationToken struct
 
 var DB *sql.DB
 
@@ -46,8 +51,15 @@ HANDLERS
 **************************************************************/
 
 func Handler(w http.ResponseWriter, r *http.Request) {
+  // @TODO #4 how do we differentiate between Registrations and
   if r.Method == http.MethodPost {
-    CreateUserHandler(w, r)
+    if r.URL.Path == "/register" {
+      CreateUserHandler(w, r)
+    } else if r.URL.Path == "/auth" {
+      AuthorizeUserHander(w, r)
+    } else {
+      respondError(w, 404, "Unknown endpoint: " + r.URL.Path)
+    }
   } else {
     respondError(w, 403, "Please use POST requests only.")
   }
@@ -65,6 +77,23 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
   // @TODO #1 get authorization token ?
   RegisterUser(user)
+
+  // @TODO #1 write authorization token
+  // w.Write(tokenJSON)
+}
+
+func AuthorizeUserHander(w http.ResponseWriter, r *http.Request) {
+  body, err := ioutil.ReadAll(r.Body)
+
+  checkError("Error reading response body:", err)
+
+  auth := AuthorizationRequest {}
+  err = json.Unmarshal(body, &auth)
+
+  checkError("Error unmarshalling response JSON:", err)
+
+  // @TODO #1 get authorization token ?
+  AuthorizeUser(auth)
 
   // @TODO #1 write authorization token
   // w.Write(tokenJSON)
@@ -126,13 +155,29 @@ func connectDB() {
 
 // Register the user into the database.
 func RegisterUser(user User) {
-  ct, err := DB.Prepare("INSERT INTO users ( name, email, password ) VALUES ( ?, ?, ? )")
+  ins, err := DB.Prepare("INSERT INTO users ( name, email, password ) VALUES ( ?, ?, ? )")
 
   checkError("Error preparing db statement:", err)
 
-  _, err = ct.Exec(user.Name, user.Email, user.Password)
+  _, err = ins.Exec(user.Name, user.Email, user.Password)
 
   checkError("Error executing INSERT statement:", err)
+}
+
+func AuthorizeUser(auth AuthorizationRequest) {
+  sel, err := DB.Prepare("SELECT * FROM users WHERE email LIKE ? AND password LIKE ?")
+  defer sel.Close()
+
+  var user User
+  var id int
+
+  checkError("Error preparing db statement:", err)
+
+  err = sel.QueryRow(auth.Email, auth.Password).Scan(&id, &user.Name, &user.Email, &user.Password)
+
+  checkError("Error executing INSERT statement:", err)
+
+  log.Println(user)
 }
 
 /**************************************************************
