@@ -6,7 +6,7 @@ import (
   "errors"
 
   "database/sql"
-  "github.com/go-sql-driver/mysql" // import mysql driver
+  "github.com/go-sql-driver/mysql"
 
   "github.com/svasandani/terrapukka/internal/util"
 )
@@ -23,7 +23,7 @@ const ers string = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9
 var er *regexp.Regexp = regexp.MustCompile(ers)
 
 // ConnectDB - connect to the database.
-func ConnectDB(dbConn DBConnection) (*sql.DB) {
+func ConnectDB(dbConn Connection) (*sql.DB) {
   conn := fmt.Sprintf("%v:%v@/%v", dbConn.User, dbConn.Password, dbConn.Database)
 
   // @TODO #2 secrets?

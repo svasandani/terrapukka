@@ -14,8 +14,8 @@ type AuthorizationToken struct {
   Token string `json:"token"`
 }
 
-// DBConnection - export DBConnection to connect to database
-type DBConnection struct {
+// Connection - export DBConnection to connect to database
+type Connection struct {
   User string
   Password string
   Database string
