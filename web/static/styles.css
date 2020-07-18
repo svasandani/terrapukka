@@ -1,0 +1,360 @@
+/*! CSS Used from: http://127.0.0.1:3000/terraling-experimental/css/reset.css */
+html, body, div, span, h1, p, a, form, label, footer, header, nav, section {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+footer, header, nav, section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+/*! CSS Used from: http://127.0.0.1:3000/terraling-experimental/css/styles.css */
+:root {
+  --light: #f6f6f6;
+  --lighter: #ffffff;
+  --dark: #161616;
+  --light-color: #6ca3ff89;
+  --dark-color: #161c2b;
+  --nav-text: var(--light);
+  --nav-bg: var(--dark-color);
+  --body-text: var(--dark);
+  --body-bg: var(--light);
+  --gray1: #676767;
+  --gray2: #cfcfcf;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Arvo';
+  background: var(--body-bg);
+  scroll-behavior: smooth;
+}
+
+h1 {
+  font-family: 'Quicksand';
+  font-size: 3em;
+  margin-bottom: 0.5em;
+}
+
+a {
+  color: var(--dark-color);
+  text-decoration: none;
+  box-shadow: inset 0 -5px var(--light-color);
+  transition: 0.06s ease-in;
+}
+
+a:hover {
+  box-shadow: inset 0 -1em var(--light-color);
+  transition: 0.06s ease-in;
+}
+
+p {
+  margin-top: 0.3em;
+  line-height: 1.35em;
+}
+
+body {
+  height: calc(100% + 60px);
+  display: grid;
+  grid-template-columns: minmax(300px, 5fr) 15fr;
+  grid-template-rows: 60px 1fr;
+  overflow-x: hidden;
+}
+
+.card {
+  margin-bottom: 1em;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid var(--gray2);
+  background: var(--lighter);
+  box-shadow: inset 0 2px 7px -5px var(--gray1);
+}
+
+header {
+  width: 100%;
+  height: 100%;
+  color: var(--nav-text);
+  background: var(--nav-bg);
+  grid-column: 1 / -1;
+}
+
+nav {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 0 5%;
+}
+
+nav a {
+  box-shadow: none;
+  color: inherit;
+  border-color: var(--nav-text);
+}
+
+.logo {
+  font-family: 'Lobster Two', serif;
+  font-size: 2em;
+  margin-right: 1em;
+  padding-bottom: 0.2em;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.logo a:hover {
+  box-shadow: none;
+}
+
+section {
+  padding: 25px;
+}
+
+footer {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 5vh 5vw;
+  border-top: 1px solid var(--gray2);
+}
+
+@media (max-width: 1000px) {
+  body {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    width: 100%;
+  }
+}
+
+/*! CSS Used from: http://127.0.0.1:3000/terraling-experimental/css/sign-in-styles.css */
+html {
+  height: 100%;
+}
+
+body {
+  grid-template-columns: 1fr;
+  grid-template-rows: 60px 1fr auto;
+  height: 100%;
+}
+
+h1 {
+  margin-bottom: 3rem;
+}
+
+nav {
+  grid-template-columns: 1fr;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.logo {
+  margin-right: 0;
+}
+
+#sign_in {
+  padding: 25px 30%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  height: 85%;
+  width: 100%;
+  padding: 15% 5%;
+  margin: 0;
+}
+
+form {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 15px;
+}
+
+.field {
+  position: relative;
+  font-size: 0.85em;
+}
+
+label {
+  font-size: 0.8em;
+  position: absolute;
+  left: 5px;
+  top: calc(50% - 0.5em);
+  height: 1em;
+  transition: 0.07s linear;
+  padding: 0 5px;
+}
+
+input {
+  font-family: inherit;
+  padding: 10px;
+  border: 1px solid var(--gray1);
+  border-radius: 5px;
+  width: 100%;
+}
+
+input:focus {
+  border: 1px solid var(--nav-bg);
+  outline: none;
+}
+
+input:not(:placeholder-shown)+label {
+  top: -0.5em;
+  background: var(--lighter);
+}
+
+input:focus+label {
+  top: -0.5em;
+  background: var(--lighter);
+  color: var(--nav-bg);
+}
+
+input:-webkit-autofill {
+  box-shadow: 0 0 0 50px white inset;
+  -webkit-box-shadow: 0 0 0 50px white inset;
+  border-color: var(--light-color);
+}
+
+.forgot-pass {
+  margin-bottom: 2rem;
+}
+
+button {
+  font-family: inherit;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid white;
+  background: var(--nav-bg);
+  color: var(--light);
+  transition: 0.1s ease-in;
+}
+
+button:hover {
+  cursor: pointer;
+  background: var(--light-color);
+  color: var(--dark);
+  transition: 0.1s ease-in;
+  box-shadow: none;
+}
+
+.register {
+  text-align: center;
+}
+
+@media (max-width: 1000px) {
+  #sign_in {
+    padding: 25px 5%;
+  }
+
+  .card {
+    height: 90%;
+  }
+}
+
+/*! CSS Used fontfaces */
+@font-face {
+  font-family: 'Arvo';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Arvo-Italic'), url(https://fonts.gstatic.com/s/arvo/v13/tDbN2oWUg0MKqSIg75Tv.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Arvo';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Arvo Bold Italic'), local('Arvo-BoldItalic'), url(https://fonts.gstatic.com/s/arvo/v13/tDbO2oWUg0MKqSIoVLH68dr_.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Arvo';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Arvo'), url(https://fonts.gstatic.com/s/arvo/v13/tDbD2oWUg0MKqScQ7Q.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Arvo';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Arvo Bold'), local('Arvo-Bold'), url(https://fonts.gstatic.com/s/arvo/v13/tDbM2oWUg0MKoZw1-LPK8w.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/quicksand/v21/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkP8o58m-wi40.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
+}
+
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/quicksand/v21/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkP8o58i-wi40.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/quicksand/v21/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkP8o58a-wg.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lobster Two';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lobster Two Bold Italic'), local('LobsterTwo-BoldItalic'), url(https://fonts.gstatic.com/s/lobstertwo/v12/BngTUXZGTXPUvIoyV6yN5-fI3hyE8R-ifg.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lobster Two';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lobster Two'), local('LobsterTwo'), url(https://fonts.gstatic.com/s/lobstertwo/v12/BngMUXZGTXPUvIoyV6yN5-fN5qU.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lobster Two';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lobster Two Bold'), local('LobsterTwo-Bold'), url(https://fonts.gstatic.com/s/lobstertwo/v12/BngRUXZGTXPUvIoyV6yN5-92w7CGwR0.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
