@@ -9,15 +9,6 @@ import (
     "github.com/svasandani/terrapukka/internal/db"
 )
 
-type httpError struct {
-  Status int `json:"status"`
-  Msg string `json:"message"`
-}
-
-type httpOK struct {
-  Msg string `json:"message"`
-}
-
 /**************************************************************
 
 API HANDLERS
@@ -33,10 +24,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
     } else if r.URL.Path == "/api/auth" {
       authorizeUserHander(w, r)
     } else {
-      respondError(w, 404, "Unknown endpoint: " + r.URL.Path)
+      util.RespondError(w, 404, "Unknown endpoint: " + r.URL.Path)
     }
   } else {
-    respondError(w, 403, "Please use POST requests only.")
+    util.RespondError(w, 403, "Please use POST requests only.")
   }
 }
 
@@ -85,38 +76,6 @@ func authorizeUserHander(w http.ResponseWriter, r *http.Request) {
 
     w.Write(json)
   } else {
-    respondError(w, 403, "User not found.")
+    util.RespondError(w, 403, "User not found.")
   }
-}
-
-// Boilerplate HTTP responses for errors and OKs
-
-func respondError(w http.ResponseWriter, status int, msg string) {
-  resp := httpError { Status: status, Msg: msg }
-
-  json, err := json.Marshal(resp)
-
-  if err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-  }
-
-  w.Header().Set("Content-Type", "application/json")
-  w.WriteHeader(status)
-
-  w.Write(json)
-}
-
-func respondOK(w http.ResponseWriter) {
-  ok := httpOK { Msg: "Ok" }
-
-  json, err := json.Marshal(ok)
-
-  if err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-  }
-
-  w.Header().Set("Content-Type", "application/json")
-  w.WriteHeader(http.StatusOK)
-
-  w.Write(json)
 }
