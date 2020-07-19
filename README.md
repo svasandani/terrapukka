@@ -9,7 +9,9 @@
 A Go OAuth provider for TerraLing. Currently in development.
 
 ## Dependencies
+- [go](https://golang.org)
 - [go-mysql-driver](https://github.com/go-sql-driver/mysql)
+- [mysql](https://mysql.com)
 
 ## Installation
 - Download and install MySQL
