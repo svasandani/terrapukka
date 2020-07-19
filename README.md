@@ -39,14 +39,16 @@ A Go OAuth provider for TerraLing. Currently in development.
 No tests have currently been written. See [#3](https://github.com/svasandani/terrapukka/issues/3).
 
 ## Endpoints
-The service currently has endpoints for registering `Clients` and `Users`, authorizing `Users`, and granting `User` data access (in this case, their names and emails) to `Clients`. The endpoints are divided into two categories:
+The service currently has endpoints for registering `Clients` and `Users`, authorizing `Users`, and granting `User` data access (in this case, their names and emails) to `Clients`.
+
+Endpoints will only accept `POST` requests, and must contain `JSON` payloads. The header must explicitly declare the `Content-Type` to be `application/json`. The endpoints are divided into two categories:
 
 ### Registration
 
 #### `api/register`
 
   Register a new `user`. Takes in the following structure, with fields required as marked:
-  ```json
+  ```yaml
   {
 
     "response_type": type of authorization request, usually "code", required,
@@ -71,7 +73,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   ```
 
   Returns the following:
-  ```json
+  ```yaml
   {
 
     "redirect_uri": URI to redirect the user to,
@@ -86,7 +88,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
 #### `api/client/register`
 
   Register a new `client`. Takes in the following structure, with fields required as marked:
-  ```json
+  ```yaml
   {
 
     "name": client's name (e.g. Terraling), required,
@@ -97,7 +99,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   ```
 
   Returns the following:
-  ```json
+  ```yaml
   {
 
     "name": client's registered name,
@@ -116,7 +118,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
 #### `api/auth`
 
   Authorize a `user`. Takes in the following structure, with fields required as marked:
-  ```json
+  ```yaml
   {
 
     "response_type": type of authorization request, usually "code", required,
@@ -139,7 +141,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   ```
 
   Returns the following:
-  ```json
+  ```yaml
   {
 
     "redirect_uri": URI to redirect the user to,
@@ -154,7 +156,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
 #### `api/client/auth`
 
   Authenticate a `client` attempting to access `user` data. Takes in the following structure, with fields required as marked:
-  ```json
+  ```yaml
   {
 
     "grant_type": type of data request, usually "identity", required,
@@ -175,7 +177,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   ```
 
   Returns the following:
-  ```json
+  ```yaml
   {
 
     "user": requested user data {
