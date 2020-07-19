@@ -15,8 +15,8 @@ type Client struct {
   RedirectURI string `json:"redirect_uri"`
 }
 
-// UserAuthenticationRequest - struct for authenticating users from client
-type UserAuthenticationRequest struct {
+// UserAuthorizationRequest - struct for authenticating users from client
+type UserAuthorizationRequest struct {
   ResponseType string `json:"response_type"`
   ClientID string `json:"client_id"`
   RedirectURI string `json:"redirect_uri"`
@@ -24,8 +24,8 @@ type UserAuthenticationRequest struct {
   User User `json:"user"`
 }
 
-// UserAuthenticationResponse - struct for responding to user authentication requests
-type UserAuthenticationResponse struct {
+// UserAuthorizationResponse - struct for responding to user authentication requests
+type UserAuthorizationResponse struct {
   RedirectURI string `json:"redirect_uri"`
   AuthCode string `json:"auth_code"`
   State string `json:"state"`

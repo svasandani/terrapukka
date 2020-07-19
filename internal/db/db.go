@@ -42,14 +42,14 @@ func ConnectDB(dbConn Connection) (*sql.DB) {
 }
 
 // RegisterUser - Register the user into the database.
-func RegisterUser(uar UserAuthenticationRequest) (UserAuthenticationResponse, error) {
+func RegisterUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, error) {
   // validate user
   if uar.User.Name == "" {
-    return UserAuthenticationResponse{}, errors.New("required field missing: name")
+    return UserAuthorizationResponse{}, errors.New("required field missing: name")
   }
 
   if err := validateEmailPassword(uar.User); err != nil {
-    return UserAuthenticationResponse{}, err
+    return UserAuthorizationResponse{}, err
   }
 
   sel, err := db.Prepare("SELECT id FROM clients WHERE identifier LIKE ? AND redirect_uri LIKE ?")
@@ -64,7 +64,7 @@ func RegisterUser(uar UserAuthenticationRequest) (UserAuthenticationResponse, er
   util.CheckError("Error executing SELECT from clients statement:", err)
 
   if id == 0 {
-    return UserAuthenticationResponse{}, errors.New("no such client exists")
+    return UserAuthorizationResponse{}, errors.New("no such client exists")
   }
 
   authCode := generateAuthCode(uar.User)
@@ -80,27 +80,27 @@ func RegisterUser(uar UserAuthenticationRequest) (UserAuthenticationResponse, er
   if err != nil {
     if sqlErr, ok := err.(*mysql.MySQLError); ok {
       if sqlErr.Number == 1062 {
-        return UserAuthenticationResponse{}, errors.New("a user already exists with that email")
+        return UserAuthorizationResponse{}, errors.New("a user already exists with that email")
       }
     }
 
-    return UserAuthenticationResponse{}, errors.New("a problem occurred; please try again later")
+    return UserAuthorizationResponse{}, errors.New("a problem occurred; please try again later")
   }
 
-  return UserAuthenticationResponse { RedirectURI: uar.RedirectURI, AuthCode: authCode, State: uar.State }, nil
+  return UserAuthorizationResponse { RedirectURI: uar.RedirectURI, AuthCode: authCode, State: uar.State }, nil
 }
 
 // AuthorizeUser - Authorize the user given specific User data
-func AuthorizeUser(uar UserAuthenticationRequest) (UserAuthenticationResponse, error) {
+func AuthorizeUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, error) {
   if err := validateEmailPassword(uar.User); err != nil {
-    return UserAuthenticationResponse{}, err
+    return UserAuthorizationResponse{}, err
   }
 
   if uar.ClientID == "" {
-    return UserAuthenticationResponse{}, errors.New("required field missing: client_id")
+    return UserAuthorizationResponse{}, errors.New("required field missing: client_id")
   }
   if uar.RedirectURI == "" {
-    return UserAuthenticationResponse{}, errors.New("required field missing: redirect_uri")
+    return UserAuthorizationResponse{}, errors.New("required field missing: redirect_uri")
   }
 
   sel, err := db.Prepare("SELECT id FROM clients WHERE identifier LIKE ? AND redirect_uri LIKE ?")
@@ -115,7 +115,7 @@ func AuthorizeUser(uar UserAuthenticationRequest) (UserAuthenticationResponse, e
   util.CheckError("Error executing SELECT from clients statement:", err)
 
   if id == 0 {
-    return UserAuthenticationResponse{}, errors.New("no such client exists")
+    return UserAuthorizationResponse{}, errors.New("no such client exists")
   }
 
   sel, err = db.Prepare("SELECT id FROM users WHERE email LIKE ? AND password LIKE ?")
@@ -141,10 +141,10 @@ func AuthorizeUser(uar UserAuthenticationRequest) (UserAuthenticationResponse, e
   util.CheckError("Error executing INSERT statement:", err)
 
   if userid != 0 {
-    return UserAuthenticationResponse { RedirectURI: uar.RedirectURI, AuthCode: authCode, State: uar.State }, nil
+    return UserAuthorizationResponse { RedirectURI: uar.RedirectURI, AuthCode: authCode, State: uar.State }, nil
   }
 
-  return UserAuthenticationResponse {}, errors.New("user could not be found")
+  return UserAuthorizationResponse {}, errors.New("user could not be found")
 }
 
 func generateAuthCode(user User) (string) {

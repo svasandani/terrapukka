@@ -65,7 +65,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
   util.CheckError("Error reading response body:", err)
 
-  uar := db.UserAuthenticationRequest {}
+  uar := db.UserAuthorizationRequest {}
   err = json.Unmarshal(body, &uar)
 
   util.CheckError("Error unmarshalling response JSON:", err)
@@ -74,7 +74,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
   util.CheckError("Error registering user:", err)
 
-  if !(resp == db.UserAuthenticationResponse{}) {
+  if !(resp == db.UserAuthorizationResponse{}) {
     json, err := json.Marshal(resp)
 
     if err != nil {
@@ -96,7 +96,7 @@ func AuthorizeUserHandler(w http.ResponseWriter, r *http.Request) {
 
   util.CheckError("Error reading response body:", err)
 
-  uar := db.UserAuthenticationRequest{}
+  uar := db.UserAuthorizationRequest{}
   err = json.Unmarshal(body, &uar)
 
   util.CheckError("Error unmarshalling response JSON:", err)
@@ -105,7 +105,7 @@ func AuthorizeUserHandler(w http.ResponseWriter, r *http.Request) {
 
   util.CheckError("Error authorizing user:", err)
 
-  if !(resp == db.UserAuthenticationResponse{}) {
+  if !(resp == db.UserAuthorizationResponse{}) {
     json, err := json.Marshal(resp)
 
     if err != nil {
