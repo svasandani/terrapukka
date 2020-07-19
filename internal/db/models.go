@@ -2,9 +2,9 @@ package db
 
 // User - export user struct for http
 type User struct {
-  Name string `json:"name,omitempty"`
+  Name string `json:"name"`
   Email string `json:"email"`
-  Password string `json:"password"`
+  Password string `json:"password,omitempty"`
 }
 
 // Client - application requesting user data

@@ -43,12 +43,12 @@ func ConnectDB(dbConn Connection) (*sql.DB) {
 
 // RegisterUser - Register the user into the database.
 func RegisterUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, error) {
-  // validate user
+  // validate request
   if uar.User.Name == "" {
     return UserAuthorizationResponse{}, errors.New("required field missing: name")
   }
 
-  if err := validateEmailPassword(uar.User); err != nil {
+  if err := validateUserAuthorizationRequest(uar); err != nil {
     return UserAuthorizationResponse{}, err
   }
 
@@ -92,15 +92,9 @@ func RegisterUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, erro
 
 // AuthorizeUser - Authorize the user given specific User data
 func AuthorizeUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, error) {
-  if err := validateEmailPassword(uar.User); err != nil {
+  // validate request
+  if err := validateUserAuthorizationRequest(uar); err != nil {
     return UserAuthorizationResponse{}, err
-  }
-
-  if uar.ClientID == "" {
-    return UserAuthorizationResponse{}, errors.New("required field missing: client_id")
-  }
-  if uar.RedirectURI == "" {
-    return UserAuthorizationResponse{}, errors.New("required field missing: redirect_uri")
   }
 
   sel, err := db.Prepare("SELECT id FROM clients WHERE identifier LIKE ? AND redirect_uri LIKE ?")
@@ -164,6 +158,24 @@ func validateEmailPassword(user User) (error) {
   }
   if len(user.Password) < 8 {
     return errors.New("password too short; minimum 8 alphanumeric characters")
+  }
+
+  return nil
+}
+
+func validateUserAuthorizationRequest(uar UserAuthorizationRequest) (error) {
+  if err := validateEmailPassword(uar.User); err != nil {
+    return err
+  }
+
+  if uar.ResponseType == "" {
+    return errors.New("required field missing: response_type")
+  }
+  if uar.ClientID == "" {
+    return errors.New("required field missing: client_id")
+  }
+  if uar.RedirectURI == "" {
+    return errors.New("required field missing: redirect_uri")
   }
 
   return nil
