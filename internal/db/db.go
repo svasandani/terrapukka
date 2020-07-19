@@ -54,11 +54,11 @@ func RegisterUser(user User) (AuthorizationToken, error) {
   }
 
 
-  ins, err := db.Prepare("INSERT INTO users ( name, email, password ) VALUES ( ?, ?, ? )")
+  ins, err := db.Prepare("INSERT INTO users ( name, email, password, auth_code ) VALUES ( ?, ?, ?, ? )")
 
   util.CheckError("Error preparing db statement:", err)
 
-  _, err = ins.Exec(user.Name, user.Email, user.Password)
+  _, err = ins.Exec(user.Name, user.Email, user.Password, "")
 
   util.CheckError("Error executing INSERT statement:", err)
 
@@ -184,20 +184,28 @@ func AuthorizeClient(car ClientAccessRequest) (User, error) {
     return User{}, errors.New("no such client exists")
   }
 
-  var usrid int
+  var userid int
   var user User
 
   sel, err = db.Prepare("SELECT * FROM users WHERE auth_code LIKE ?")
 
   util.CheckError("Error preparing db statement:", err)
 
-  err = sel.QueryRow(car.AuthCode).Scan(&usrid, &user.Name, &user.Email, &user.Password, &user.AuthCode)
+  err = sel.QueryRow(car.AuthCode).Scan(&userid, &user.Name, &user.Email, &user.Password, &user.AuthCode)
 
   util.CheckError("Error executing SELECT FROM users statement:", err)
 
-  if usrid != 0 {
-    return user, nil
+  if userid == 0 {
+    return User{}, errors.New("no such user exists")
   }
 
-  return User{}, errors.New("no such user exists")
+  ins, err := db.Prepare("UPDATE users SET auth_code=? WHERE id=?")
+
+  util.CheckError("Error preparing db statement:", err)
+
+  _, err = ins.Exec("", userid)
+
+  util.CheckError("Error executing INSERT statement:", err)
+
+  return user, err
 }
