@@ -17,7 +17,7 @@ API MIDDLEWARE HANDLERS
 
 // Middleware - chain all middleware handlers in one nice convenient function :))
 func Middleware(fn func(w http.ResponseWriter, r *http.Request)) (func(w http.ResponseWriter, r *http.Request)) {
-  return PostHandler(JSONHandler(fn))
+  return PreflightRequestHandler(PostHandler(JSONHandler(fn)))
 }
 
 // PostHandler - ensure all requests to API are posts
@@ -38,6 +38,17 @@ func JSONHandler(fn func(w http.ResponseWriter, r *http.Request)) (func(w http.R
       fn(w, r)
     } else {
       util.RespondError(w, 400, "Please submit JSON payloads only.")
+    }
+  })
+}
+
+// PreflightRequestHandler - respond with OK on CORS preflight check
+func PreflightRequestHandler(fn func(w http.ResponseWriter, r *http.Request)) (func(w http.ResponseWriter, r *http.Request)) {
+  return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodOptions {
+      util.RespondOK(w)
+    } else {
+      fn(w, r)
     }
   })
 }
