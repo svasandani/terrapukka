@@ -14,11 +14,11 @@ A Go OAuth provider for TerraLing. Currently in development.
 - [Testing](#testing)
 - [Endpoints](#endpoints)
   * [Registration](#registration)
-    + [`api/register`](#-api-register-)
-    + [`api/client/register`](#-api-client-register-)
+    + [`api/register`](#apiregister)
+    + [`api/client/register`](#apiclientregister)
   * [Authorization](#authorization)
-    + [`api/auth`](#-api-auth-)
-    + [`api/client/auth`](#-api-client-auth-)
+    + [`api/auth`](#apiauth)
+    + [`api/client/auth`](#apiclientauth)
 - [Contributing](#contributing)
 
 ## Dependencies
