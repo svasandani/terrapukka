@@ -13,7 +13,7 @@ import (
 
 /**************************************************************
 
-DATABASE
+DATABASE FUNCTIONS
 
 **************************************************************/
 
@@ -76,37 +76,38 @@ func RegisterUser(user User) (AuthorizationToken, error) {
 }
 
 // AuthorizeUser - Authorize the user given specific User data
-func AuthorizeUser(user User) (AuthorizationToken, error) {
-  if err := validateEmailPassword(user); err != nil {
-    return AuthorizationToken{}, err
+func AuthorizeUser(uar UserAuthenticationRequest) (UserAuthenticationResponse, error) {
+  if err := validateEmailPassword(uar.User); err != nil {
+    return UserAuthenticationResponse{}, err
   }
 
-  sel, err := db.Prepare("SELECT * FROM users WHERE email LIKE ? AND password LIKE ?")
+  sel, err := db.Prepare("SELECT id FROM users WHERE email LIKE ? AND password LIKE ?")
   defer sel.Close()
 
   var id int
+  var authCode string
 
   util.CheckError("Error preparing db statement:", err)
 
-  err = sel.QueryRow(user.Email, user.Password).Scan(&id, &user.Name, &user.Email, &user.Password, &user.AuthCode)
+  err = sel.QueryRow(uar.User.Email, uar.User.Password).Scan(&id)
 
   util.CheckError("Error executing SELECT statement:", err)
 
-  user.AuthCode = generateAuthCode(user)
+  authCode = generateAuthCode(uar.User)
 
   ins, err := db.Prepare("UPDATE users SET auth_code=? WHERE id=?")
 
   util.CheckError("Error preparing db statement:", err)
 
-  _, err = ins.Exec(user.AuthCode, id)
+  _, err = ins.Exec(authCode, id)
 
   util.CheckError("Error executing INSERT statement:", err)
 
   if id != 0 {
-    return AuthorizationToken { Authorized: true, Token: user.AuthCode }, nil
+    return UserAuthenticationResponse { RedirectURI: uar.RedirectURI, AuthCode: authCode, State: uar.State }, nil
   }
 
-  return AuthorizationToken { Authorized: false, Token: "" }, nil
+  return UserAuthenticationResponse {}, errors.New("user could not be found")
 }
 
 func generateAuthCode(user User) (string) {
@@ -156,16 +157,16 @@ func RegisterClient(client Client) (Client, error) {
 }
 
 // AuthorizeClient - Authorize the client given a ClientAccessRequest
-func AuthorizeClient(car ClientAccessRequest) (User, error) {
+func AuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, error) {
   if car.AuthCode == "" {
-    return User{}, errors.New("required field missing: auth_code")
+    return ClientAccessResponse{}, errors.New("required field missing: auth_code")
   }
 
   if car.Client.ID == "" {
-    return User{}, errors.New("required field missing: id")
+    return ClientAccessResponse{}, errors.New("required field missing: id")
   }
   if car.Client.Secret == "" {
-    return User{}, errors.New("required field missing: secret")
+    return ClientAccessResponse{}, errors.New("required field missing: secret")
   }
 
   sel, err := db.Prepare("SELECT * FROM clients WHERE identifier LIKE ? AND secret LIKE ?")
@@ -181,22 +182,22 @@ func AuthorizeClient(car ClientAccessRequest) (User, error) {
   util.CheckError("Error executing SELECT from clients statement:", err)
 
   if id == 0 {
-    return User{}, errors.New("no such client exists")
+    return ClientAccessResponse{}, errors.New("no such client exists")
   }
 
   var userid int
   var user User
 
-  sel, err = db.Prepare("SELECT * FROM users WHERE auth_code LIKE ?")
+  sel, err = db.Prepare("SELECT id, name, email FROM users WHERE auth_code LIKE ?")
 
   util.CheckError("Error preparing db statement:", err)
 
-  err = sel.QueryRow(car.AuthCode).Scan(&userid, &user.Name, &user.Email, &user.Password, &user.AuthCode)
+  err = sel.QueryRow(car.AuthCode).Scan(&userid, &user.Name, &user.Email)
 
   util.CheckError("Error executing SELECT FROM users statement:", err)
 
   if userid == 0 {
-    return User{}, errors.New("no such user exists")
+    return ClientAccessResponse{}, errors.New("no such user exists")
   }
 
   ins, err := db.Prepare("UPDATE users SET auth_code=? WHERE id=?")
@@ -207,5 +208,5 @@ func AuthorizeClient(car ClientAccessRequest) (User, error) {
 
   util.CheckError("Error executing INSERT statement:", err)
 
-  return user, err
+  return ClientAccessResponse{User: user}, err
 }

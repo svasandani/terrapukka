@@ -5,7 +5,6 @@ type User struct {
   Name string `json:"name,omitempty"`
   Email string `json:"email"`
   Password string `json:"password"`
-  AuthCode string `json:"auth_code,omitempty"`
 }
 
 // Client - application requesting user data
@@ -17,11 +16,33 @@ type Client struct {
 
 // ClientAccessRequest - struct for clients requesting user data
 type ClientAccessRequest struct {
+  GrantType string `json:"grant_type"`
   AuthCode string `json:"auth_code"`
+  RedirectURI string `json:"redirect_uri"`
   Client Client `json:"client"`
 }
 
-// @TODO #1 create Authorization struct for OAuth
+// ClientAccessResponse - stsruct for responding to client access request
+type ClientAccessResponse struct {
+  User User `json:"user"`
+}
+
+// UserAuthenticationRequest - struct for authenticating users from client
+type UserAuthenticationRequest struct {
+  ResponseType string `json:"response_type"`
+  ClientID string `json:"client_id"`
+  RedirectURI string `json:"redirect_uri"`
+  State string `json:"state"`
+  User User `json:"user"`
+}
+
+// UserAuthenticationResponse - struct for responding to user authentication requests
+type UserAuthenticationResponse struct {
+  RedirectURI string `json:"redirect_uri"`
+  AuthCode string `json:"auth_code"`
+  State string `json:"state"`
+}
+
 // AuthorizationToken - token for OAuth authorization
 type AuthorizationToken struct {
   Authorized bool `json:"authorized"`

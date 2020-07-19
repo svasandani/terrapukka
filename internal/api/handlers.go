@@ -88,21 +88,21 @@ func AuthorizeUserHandler(w http.ResponseWriter, r *http.Request) {
 
   util.CheckError("Error reading response body:", err)
 
-  user := db.User {}
-  err = json.Unmarshal(body, &user)
+  uar := db.UserAuthenticationRequest{}
+  err = json.Unmarshal(body, &uar)
 
   util.CheckError("Error unmarshalling response JSON:", err)
 
   // @TODO #1 get authorization token ?
-  token, err := db.AuthorizeUser(user)
+  resp, err := db.AuthorizeUser(uar)
 
   util.CheckError("Error authorizing user:", err)
 
   // @TODO #1 write authorization token
   // w.Write(tokenJSON)
 
-  if token.Authorized {
-    json, err := json.Marshal(token)
+  if !(resp == db.UserAuthenticationResponse{}) {
+    json, err := json.Marshal(resp)
 
     if err != nil {
       http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -113,7 +113,7 @@ func AuthorizeUserHandler(w http.ResponseWriter, r *http.Request) {
 
     w.Write(json)
   } else {
-    util.RespondError(w, 403, "iser not found")
+    util.RespondError(w, 403, "user not found")
   }
 }
 
@@ -159,12 +159,12 @@ func AuthorizeClientHandler(w http.ResponseWriter, r *http.Request) {
 
   util.CheckError("Error unmarshalling response JSON:", err)
 
-  user, err := db.AuthorizeClient(car)
+  resp, err := db.AuthorizeClient(car)
 
   util.CheckError("Error authorizing client:", err)
 
-  if user.AuthCode == car.AuthCode {
-    json, err := json.Marshal(user)
+  if (resp.User != db.User{}) {
+    json, err := json.Marshal(resp)
 
     if err != nil {
       http.Error(w, err.Error(), http.StatusInternalServerError)
