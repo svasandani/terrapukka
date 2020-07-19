@@ -113,6 +113,68 @@ func AuthorizeUserHandler(w http.ResponseWriter, r *http.Request) {
 
     w.Write(json)
   } else {
-    util.RespondError(w, 403, "User not found.")
+    util.RespondError(w, 403, "iser not found")
+  }
+}
+
+// CreateClientHandler - create a new client
+func CreateClientHandler(w http.ResponseWriter, r *http.Request) {
+  body, err := ioutil.ReadAll(r.Body)
+
+  util.CheckError("Error reading response body:", err)
+
+  client := db.Client {}
+  err = json.Unmarshal(body, &client)
+
+  util.CheckError("Error unmarshalling response JSON:", err)
+
+  client, err = db.RegisterClient(client)
+
+  util.CheckError("Error authorizing user:", err)
+
+  if client.ID != "" {
+    json, err := json.Marshal(client)
+
+    if err != nil {
+      http.Error(w, err.Error(), http.StatusInternalServerError)
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+
+    w.Write(json)
+  } else {
+    util.RespondError(w, 400, err.Error())
+  }
+}
+
+// AuthorizeClientHandler - authorize a client for a user given ClientAccessRequest
+func AuthorizeClientHandler(w http.ResponseWriter, r *http.Request) {
+  body, err := ioutil.ReadAll(r.Body)
+
+  util.CheckError("Error reading response body:", err)
+
+  car := db.ClientAccessRequest {}
+  err = json.Unmarshal(body, &car)
+
+  util.CheckError("Error unmarshalling response JSON:", err)
+
+  user, err := db.AuthorizeClient(car)
+
+  util.CheckError("Error authorizing client:", err)
+
+  if user.AuthCode == car.AuthCode {
+    json, err := json.Marshal(user)
+
+    if err != nil {
+      http.Error(w, err.Error(), http.StatusInternalServerError)
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+
+    w.Write(json)
+  } else {
+    util.RespondError(w, 403, err.Error())
   }
 }

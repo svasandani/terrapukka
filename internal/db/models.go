@@ -5,12 +5,20 @@ type User struct {
   Name string `json:"name,omitempty"`
   Email string `json:"email"`
   Password string `json:"password"`
+  AuthCode string `json:"auth_code,omitempty"`
 }
 
+// Client - application requesting user data
 type Client struct {
   Name string `json:"name,omitempty"`
-  ID string `json:"id"`
-  Secret string `json:"secret"`
+  ID string `json:"id,omitempty"`
+  Secret string `json:"secret,omitempty"`
+}
+
+// ClientAccessRequest - struct for clients requesting user data
+type ClientAccessRequest struct {
+  AuthCode string `json:"auth_code"`
+  Client Client `json:"client"`
 }
 
 // @TODO #1 create Authorization struct for OAuth
