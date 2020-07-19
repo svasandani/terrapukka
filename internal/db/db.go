@@ -80,15 +80,37 @@ func AuthorizeUser(uar UserAuthenticationRequest) (UserAuthenticationResponse, e
     return UserAuthenticationResponse{}, err
   }
 
-  sel, err := db.Prepare("SELECT id FROM users WHERE email LIKE ? AND password LIKE ?")
+  if uar.ClientID == "" {
+    return UserAuthenticationResponse{}, errors.New("required field missing: client_id")
+  }
+  if uar.RedirectURI == "" {
+    return UserAuthenticationResponse{}, errors.New("required field missing: redirect_uri")
+  }
+
+  sel, err := db.Prepare("SELECT id FROM clients WHERE identifier LIKE ? AND redirect_uri LIKE ?")
   defer sel.Close()
 
   var id int
+
+  util.CheckError("Error preparing db statement:", err)
+
+  err = sel.QueryRow(uar.ClientID, uar.RedirectURI).Scan(&id)
+
+  util.CheckError("Error executing SELECT from clients statement:", err)
+
+  if id == 0 {
+    return UserAuthenticationResponse{}, errors.New("no such client exists")
+  }
+
+  sel, err = db.Prepare("SELECT id FROM users WHERE email LIKE ? AND password LIKE ?")
+  defer sel.Close()
+
+  var userid int
   var authCode string
 
   util.CheckError("Error preparing db statement:", err)
 
-  err = sel.QueryRow(uar.User.Email, uar.User.Password).Scan(&id)
+  err = sel.QueryRow(uar.User.Email, uar.User.Password).Scan(&userid)
 
   util.CheckError("Error executing SELECT statement:", err)
 
@@ -98,11 +120,11 @@ func AuthorizeUser(uar UserAuthenticationRequest) (UserAuthenticationResponse, e
 
   util.CheckError("Error preparing db statement:", err)
 
-  _, err = ins.Exec(authCode, id)
+  _, err = ins.Exec(authCode, userid)
 
   util.CheckError("Error executing INSERT statement:", err)
 
-  if id != 0 {
+  if userid != 0 {
     return UserAuthenticationResponse { RedirectURI: uar.RedirectURI, AuthCode: authCode, State: uar.State }, nil
   }
 
@@ -137,14 +159,17 @@ func RegisterClient(client Client) (Client, error) {
   if client.Name == "" {
     return Client{}, errors.New("required field missing: name")
   }
+  if client.RedirectURI == "" {
+    return Client{}, errors.New("required field missing: redirect_uri")
+  }
 
-  ins, err := db.Prepare("INSERT INTO clients ( name, identifier, secret ) VALUES ( ?, ?, ? )")
+  ins, err := db.Prepare("INSERT INTO clients ( name, identifier, secret, redirect_uri ) VALUES ( ?, ?, ?, ? )")
 
   util.CheckError("Error preparing db statement:", err)
 
   identifier := "n902hc08yd8014"
   secret := "030f0chhh403h"
-  _, err = ins.Exec(client.Name, identifier, secret)
+  _, err = ins.Exec(client.Name, identifier, secret, client.RedirectURI)
 
   util.CheckError("Error executing INSERT statement:", err)
 
@@ -152,7 +177,7 @@ func RegisterClient(client Client) (Client, error) {
     return Client { }, errors.New("a problem occurred; please try again later")
   }
 
-  return Client { Name: client.Name, ID: identifier, Secret: secret }, nil
+  return Client { Name: client.Name, ID: identifier, Secret: secret, RedirectURI: client.RedirectURI }, nil
 }
 
 // AuthorizeClient - Authorize the client given a ClientAccessRequest
@@ -167,16 +192,18 @@ func AuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, error) {
   if car.Client.Secret == "" {
     return ClientAccessResponse{}, errors.New("required field missing: secret")
   }
+  if car.Client.RedirectURI == "" {
+    return ClientAccessResponse{}, errors.New("required field missing: redirect_uri")
+  }
 
-  sel, err := db.Prepare("SELECT * FROM clients WHERE identifier LIKE ? AND secret LIKE ?")
+  sel, err := db.Prepare("SELECT id FROM clients WHERE identifier LIKE ? AND secret LIKE ? AND redirect_uri LIKE ?")
   defer sel.Close()
 
   var id int
-  var client Client
 
   util.CheckError("Error preparing db statement:", err)
 
-  err = sel.QueryRow(car.Client.ID, car.Client.Secret).Scan(&id, &client.Name, &client.ID, &client.Secret)
+  err = sel.QueryRow(car.Client.ID, car.Client.Secret, car.Client.RedirectURI).Scan(&id)
 
   util.CheckError("Error executing SELECT from clients statement:", err)
 

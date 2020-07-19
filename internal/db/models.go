@@ -12,13 +12,13 @@ type Client struct {
   Name string `json:"name,omitempty"`
   ID string `json:"id,omitempty"`
   Secret string `json:"secret,omitempty"`
+  RedirectURI string `json:"redirect_uri"`
 }
 
 // ClientAccessRequest - struct for clients requesting user data
 type ClientAccessRequest struct {
   GrantType string `json:"grant_type"`
   AuthCode string `json:"auth_code"`
-  RedirectURI string `json:"redirect_uri"`
   Client Client `json:"client"`
 }
 
