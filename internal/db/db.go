@@ -42,36 +42,52 @@ func ConnectDB(dbConn Connection) (*sql.DB) {
 }
 
 // RegisterUser - Register the user into the database.
-func RegisterUser(user User) (AuthorizationToken, error) {
+func RegisterUser(uar UserAuthenticationRequest) (UserAuthenticationResponse, error) {
   // validate user
-  if user.Name == "" {
-    return AuthorizationToken{}, errors.New("Required field missing: Name")
+  if uar.User.Name == "" {
+    return UserAuthenticationResponse{}, errors.New("required field missing: name")
   }
 
-  if err := validateEmailPassword(user); err != nil {
-    return AuthorizationToken{}, err
+  if err := validateEmailPassword(uar.User); err != nil {
+    return UserAuthenticationResponse{}, err
   }
 
+  sel, err := db.Prepare("SELECT id FROM clients WHERE identifier LIKE ? AND redirect_uri LIKE ?")
+  defer sel.Close()
+
+  var id int
+
+  util.CheckError("Error preparing db statement:", err)
+
+  err = sel.QueryRow(uar.ClientID, uar.RedirectURI).Scan(&id)
+
+  util.CheckError("Error executing SELECT from clients statement:", err)
+
+  if id == 0 {
+    return UserAuthenticationResponse{}, errors.New("no such client exists")
+  }
+
+  authCode := generateAuthCode(uar.User)
 
   ins, err := db.Prepare("INSERT INTO users ( name, email, password, auth_code ) VALUES ( ?, ?, ?, ? )")
 
   util.CheckError("Error preparing db statement:", err)
 
-  _, err = ins.Exec(user.Name, user.Email, user.Password, "")
+  _, err = ins.Exec(uar.User.Name, uar.User.Email, uar.User.Password, authCode)
 
   util.CheckError("Error executing INSERT statement:", err)
 
   if err != nil {
     if sqlErr, ok := err.(*mysql.MySQLError); ok {
       if sqlErr.Number == 1062 {
-        return AuthorizationToken { Authorized: false, Token: "" }, errors.New("a user already exists with that email")
+        return UserAuthenticationResponse{}, errors.New("a user already exists with that email")
       }
     }
 
-    return AuthorizationToken { Authorized: false, Token: "" }, errors.New("a problem occurred; please try again later")
+    return UserAuthenticationResponse{}, errors.New("a problem occurred; please try again later")
   }
 
-  return AuthorizationToken { Authorized: true, Token: user.Name }, nil
+  return UserAuthenticationResponse { RedirectURI: uar.RedirectURI, AuthCode: authCode, State: uar.State }, nil
 }
 
 // AuthorizeUser - Authorize the user given specific User data

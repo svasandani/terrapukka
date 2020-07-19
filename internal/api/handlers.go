@@ -65,17 +65,17 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
   util.CheckError("Error reading response body:", err)
 
-  user := db.User {}
-  err = json.Unmarshal(body, &user)
+  uar := db.UserAuthenticationRequest {}
+  err = json.Unmarshal(body, &uar)
 
   util.CheckError("Error unmarshalling response JSON:", err)
 
-  token, err := db.RegisterUser(user)
+  resp, err := db.RegisterUser(uar)
 
-  util.CheckError("Error authorizing user:", err)
+  util.CheckError("Error registering user:", err)
 
-  if token.Authorized {
-    json, err := json.Marshal(token)
+  if !(resp == db.UserAuthenticationResponse{}) {
+    json, err := json.Marshal(resp)
 
     if err != nil {
       http.Error(w, err.Error(), http.StatusInternalServerError)

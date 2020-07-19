@@ -15,18 +15,6 @@ type Client struct {
   RedirectURI string `json:"redirect_uri"`
 }
 
-// ClientAccessRequest - struct for clients requesting user data
-type ClientAccessRequest struct {
-  GrantType string `json:"grant_type"`
-  AuthCode string `json:"auth_code"`
-  Client Client `json:"client"`
-}
-
-// ClientAccessResponse - stsruct for responding to client access request
-type ClientAccessResponse struct {
-  User User `json:"user"`
-}
-
 // UserAuthenticationRequest - struct for authenticating users from client
 type UserAuthenticationRequest struct {
   ResponseType string `json:"response_type"`
@@ -43,10 +31,16 @@ type UserAuthenticationResponse struct {
   State string `json:"state"`
 }
 
-// AuthorizationToken - token for OAuth authorization
-type AuthorizationToken struct {
-  Authorized bool `json:"authorized"`
-  Token string `json:"token"`
+// ClientAccessRequest - struct for clients requesting user data
+type ClientAccessRequest struct {
+  GrantType string `json:"grant_type"`
+  AuthCode string `json:"auth_code"`
+  Client Client `json:"client"`
+}
+
+// ClientAccessResponse - stsruct for responding to client access request
+type ClientAccessResponse struct {
+  User User `json:"user"`
 }
 
 // Connection - export DBConnection to connect to database
