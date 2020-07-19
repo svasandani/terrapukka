@@ -26,7 +26,6 @@ var er *regexp.Regexp = regexp.MustCompile(ers)
 func ConnectDB(dbConn Connection) (*sql.DB) {
   conn := fmt.Sprintf("%v:%v@/%v", dbConn.User, dbConn.Password, dbConn.Database)
 
-  // @TODO #2 secrets?
   dbLocal, err := sql.Open("mysql", conn)
 
   util.CheckError("Error opening connection to database:", err)

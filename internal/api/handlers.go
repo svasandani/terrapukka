@@ -59,13 +59,10 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
   util.CheckError("Error unmarshalling response JSON:", err)
 
-  // @TODO #1 get authorization token ?
   token, err := db.RegisterUser(user)
 
   util.CheckError("Error authorizing user:", err)
 
-  // @TODO #1 write authorization token
-  // w.Write(tokenJSON)
   if token.Authorized {
     json, err := json.Marshal(token)
 
@@ -93,13 +90,9 @@ func AuthorizeUserHandler(w http.ResponseWriter, r *http.Request) {
 
   util.CheckError("Error unmarshalling response JSON:", err)
 
-  // @TODO #1 get authorization token ?
   resp, err := db.AuthorizeUser(uar)
 
   util.CheckError("Error authorizing user:", err)
-
-  // @TODO #1 write authorization token
-  // w.Write(tokenJSON)
 
   if !(resp == db.UserAuthenticationResponse{}) {
     json, err := json.Marshal(resp)
