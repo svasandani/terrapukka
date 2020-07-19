@@ -8,6 +8,19 @@
 <br>
 A Go OAuth provider for TerraLing. Currently in development.
 
+## Table of Contents
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+- [Testing](#testing)
+- [Endpoints](#endpoints)
+  * [Registration](#registration)
+    + [`api/register`](#-api-register-)
+    + [`api/client/register`](#-api-client-register-)
+  * [Authorization](#authorization)
+    + [`api/auth`](#-api-auth-)
+    + [`api/client/auth`](#-api-client-auth-)
+- [Contributing](#contributing)
+
 ## Dependencies
 - [go](https://golang.org)
 - [go-mysql-driver](https://github.com/go-sql-driver/mysql)
@@ -26,9 +39,11 @@ A Go OAuth provider for TerraLing. Currently in development.
 No tests have currently been written. See [#3](https://github.com/svasandani/terrapukka/issues/3).
 
 ## Endpoints
-The service currently has endpoints for registering `Clients` and `Users`, authorizing `Users`, and granting `User` data access (in this case, their names and emails) to `Clients`. The endpoints are:
+The service currently has endpoints for registering `Clients` and `Users`, authorizing `Users`, and granting `User` data access (in this case, their names and emails) to `Clients`. The endpoints are divided into two categories:
 
-### `api/register`
+### Registration
+
+#### `api/register`
 
   Register a new `user`. Takes in the following structure, with fields required as marked:
   ```
@@ -68,7 +83,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   }
   ```
 
-### `api/client/register`
+#### `api/client/register`
 
   Register a new `client`. Takes in the following structure, with fields required as marked:
   ```
@@ -96,7 +111,9 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   }
   ```
 
-### `api/auth`
+### Authorization
+
+#### `api/auth`
 
   Authorize a `user`. Takes in the following structure, with fields required as marked:
   ```
@@ -134,7 +151,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   }
   ```
 
-### `api/client/auth`
+#### `api/client/auth`
 
   Authenticate a `client` attempting to access `user` data. Takes in the following structure, with fields required as marked:
   ```
