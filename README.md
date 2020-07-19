@@ -28,9 +28,7 @@ No tests have currently been written. See [#3](https://github.com/svasandani/ter
 ## Endpoints
 The service currently has endpoints for registering `Clients` and `Users`, authorizing `Users`, and granting `User` data access (in this case, their names and emails) to `Clients`. The endpoints are:
 
-### Client
-
-- `api/register`
+### `api/register`
 
   Register a new `user`. Takes in the following structure, with fields required as marked:
   ```
@@ -70,7 +68,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   }
   ```
 
-- `api/client/register`
+### `api/client/register`
 
   Register a new `client`. Takes in the following structure, with fields required as marked:
   ```
@@ -98,7 +96,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   }
   ```
 
-- `api/auth`
+### `api/auth`
 
   Authorize a `user`. Takes in the following structure, with fields required as marked:
   ```
@@ -136,7 +134,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   }
   ```
 
-- `api/client/auth`
+### `api/client/auth`
 
   Authenticate a `client` attempting to access `user` data. Takes in the following structure, with fields required as marked:
   ```
