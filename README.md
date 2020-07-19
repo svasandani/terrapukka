@@ -46,7 +46,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
 #### `api/register`
 
   Register a new `user`. Takes in the following structure, with fields required as marked:
-  ```
+  ```json
   {
 
     "response_type": type of authorization request, usually "code", required,
@@ -71,7 +71,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   ```
 
   Returns the following:
-  ```
+  ```json
   {
 
     "redirect_uri": URI to redirect the user to,
@@ -86,7 +86,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
 #### `api/client/register`
 
   Register a new `client`. Takes in the following structure, with fields required as marked:
-  ```
+  ```json
   {
 
     "name": client's name (e.g. Terraling), required,
@@ -97,7 +97,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   ```
 
   Returns the following:
-  ```
+  ```json
   {
 
     "name": client's registered name,
@@ -116,7 +116,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
 #### `api/auth`
 
   Authorize a `user`. Takes in the following structure, with fields required as marked:
-  ```
+  ```json
   {
 
     "response_type": type of authorization request, usually "code", required,
@@ -139,7 +139,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   ```
 
   Returns the following:
-  ```
+  ```json
   {
 
     "redirect_uri": URI to redirect the user to,
@@ -154,7 +154,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
 #### `api/client/auth`
 
   Authenticate a `client` attempting to access `user` data. Takes in the following structure, with fields required as marked:
-  ```
+  ```json
   {
 
     "grant_type": type of data request, usually "identity", required,
@@ -175,7 +175,7 @@ The service currently has endpoints for registering `Clients` and `Users`, autho
   ```
 
   Returns the following:
-  ```
+  ```json
   {
 
     "user": requested user data {
