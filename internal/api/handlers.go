@@ -117,7 +117,7 @@ func AuthorizeUserHandler(w http.ResponseWriter, r *http.Request) {
 
     w.Write(json)
   } else {
-    util.RespondError(w, 403, "user not found")
+    util.RespondError(w, 403, err.Error())
   }
 }
 
