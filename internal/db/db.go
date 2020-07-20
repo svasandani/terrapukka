@@ -64,7 +64,7 @@ func RegisterUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, erro
   util.CheckError("Error executing SELECT from clients statement:", err)
 
   if id == 0 {
-    return UserAuthorizationResponse{}, errors.New("no such client exists")
+    return UserAuthorizationResponse{}, errors.New("client could not be found")
   }
 
   authCode := generateAuthCode(uar.User)
@@ -109,7 +109,7 @@ func AuthorizeUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, err
   util.CheckError("Error executing SELECT from clients statement:", err)
 
   if id == 0 {
-    return UserAuthorizationResponse{}, errors.New("no such client exists")
+    return UserAuthorizationResponse{}, errors.New("client could not be found")
   }
 
   sel, err = db.Prepare("SELECT id FROM users WHERE email LIKE ? AND password LIKE ?")
@@ -236,7 +236,7 @@ func AuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, error) {
   util.CheckError("Error executing SELECT from clients statement:", err)
 
   if id == 0 {
-    return ClientAccessResponse{}, errors.New("no such client exists")
+    return ClientAccessResponse{}, errors.New("client could not be found")
   }
 
   var userid int
@@ -251,7 +251,7 @@ func AuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, error) {
   util.CheckError("Error executing SELECT FROM users statement:", err)
 
   if userid == 0 {
-    return ClientAccessResponse{}, errors.New("no such user exists")
+    return ClientAccessResponse{}, errors.New("user could not be found")
   }
 
   ins, err := db.Prepare("UPDATE users SET auth_code=? WHERE id=?")
