@@ -243,11 +243,8 @@ input:-webkit-autofill {
   border-color: var(--light-color);
 }
 
-.forgot-pass {
-  margin-bottom: 2rem;
-}
-
 button {
+  margin-top: 2rem;
   font-family: inherit;
   padding: 10px;
   border-radius: 5px;
@@ -270,7 +267,7 @@ button:hover {
 }
 
 @media (max-width: 1000px) {
-  #sign_in {
+  #form {
     padding: 25px 5%;
   }
 
