@@ -191,6 +191,42 @@ Endpoints will only accept `POST` requests, and must contain `JSON` payloads. Th
   }
   ```
 
+### Identification
+
+#### `api/client/identify`
+
+  Identify a `client` given their `name` and `redirect_uri`. Takes in the following structure, with fields required as marked:
+  ```yaml
+  {
+
+    "client": client model containing id and secret, required {
+
+      "id": client's id, required,
+
+      "redirect_uri": client's redirect_uri, required
+
+    }
+
+  }
+  ```
+
+  Returns the following:
+  ```yaml
+  {
+
+    "client": requested client data {
+
+      "name": client's name,
+
+      "id": client's id,
+
+      "redirect_uri": client's redirect_uri
+
+    }
+
+  }
+  ```
+
 ## Contributing
 Look through the issues and read through the code to see what needs help. Some tags:
 - `@TODO` - problems that are attached to issues.

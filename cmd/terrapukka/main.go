@@ -26,6 +26,7 @@ func main() {
 
   http.HandleFunc("/api/client/register", api.Middleware(api.CreateClientHandler))
   http.HandleFunc("/api/client/auth", api.Middleware(api.AuthorizeClientHandler))
+  http.HandleFunc("/api/client/identify", api.Middleware(api.IdentifyClientHandler))
 
   log.Fatal(http.ListenAndServe(":" + *port, nil))
 }
