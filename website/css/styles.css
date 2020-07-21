@@ -165,7 +165,7 @@ nav {
   margin-right: 0;
 }
 
-#sign_in {
+#form {
   padding: 25px 30%;
   height: 100%;
   display: grid;
@@ -175,7 +175,7 @@ nav {
   align-items: center;
 }
 
-.sign-in-card {
+.form-card {
   height: 100%;
   width: 100%;
   padding: 10% 5%;

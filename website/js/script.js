@@ -199,7 +199,16 @@ window.addEventListener('DOMContentLoaded', () => {
         response = response.json();
         return response;
       } else {
-        document.querySelector("header").after(createError("Something went wrong. Please try signing in again."))
+        let section = document.createElement("section");
+        let span = document.createElement("span");
+        span.setAttribute("aria-hidden", "true");
+        section.appendChild(span);
+        section.id = "form";
+        let el = document.createElement("div");
+        el.classList.add("card", "form-card");
+        el.appendChild(createError("Something went wrong. Please try signing in again."));
+        section.appendChild(el);
+        document.querySelector("header").after(section);
       }
     }).then(data => {
       if (data)
