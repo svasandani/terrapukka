@@ -1,5 +1,5 @@
-let form = document.querySelector("form");
-let card = document.querySelector(".sign-in-card")
+var form = document.querySelector("form");
+var card = document.querySelector(".sign-in-card");
 let urlParams = new URLSearchParams(window.location.search);
 let responseOK = false;
 
@@ -17,25 +17,58 @@ const errorDict = {
   "required field missing: password": "You must enter a password. Please try again."
 }
 
-function doReady() {
+function doReady(method) {
+  form = document.querySelector("form");
+  card = document.querySelector(".sign-in-card");
+
+  if (method === "register") {
+    urlParams.set("method", "sign-in");
+    console.log(urlParams.toString());
+    document.querySelector(".sign-in-link").href = "//" + location.host + location.pathname + "?" + urlParams.toString();
+  } else {
+    urlParams.set("method", "register");
+    document.querySelector(".register-link").href = "//" + location.host + location.pathname + "?" + urlParams.toString();
+  }
   form.addEventListener("submit", (e) => {
-    handleSubmission(e)
+    handleSubmission(e, method)
   }, false);
+
 }
 
 
-function handleSubmission(e) {
+function handleSubmission(e, method) {
   e.preventDefault();
 
+  let name = "";
   let email = form.querySelector("#email").value;
   let password = form.querySelector("#password").value;
-  // let confirmPassword = form.querySelector("#confirm-password").value;
-  //
-  // if (confirmPassword !== password) {
-  //   return;
-  // }
+  let confirmPassword = "";
+  let user = {};
 
-  fetch(API + "auth", {
+  if (method === "register") {
+    name = form.querySelector("#name").value;
+    confirmPassword = form.querySelector("#confirm-password").value;
+
+    if (confirmPassword !== password) {
+      let el = appendError(createError("Your passwords need to match. Please try again."));
+      setTimeout(() => {
+        removeError(el);
+      }, 4000);
+
+      form.querySelector("#password").value = "";
+      form.querySelector("#confirm-password").value = "";
+
+      return;
+    }
+
+    user.name = name;
+  }
+
+  user.email = email;
+  user.password = password;
+
+
+  fetch(API + (method === "register" ? method : "auth"), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -45,10 +78,7 @@ function handleSubmission(e) {
         "redirect_uri": urlParams.get("redirect_uri"),
         "client_id": urlParams.get("client_id"),
         "state": urlParams.get("state"),
-        "user": {
-          "email": email,
-          "password": password
-        }
+        "user": user
       })
     })
     .then(response => {
@@ -145,7 +175,9 @@ function loadMainElement(mode, service) {
       document.body.removeChild(main);
       header.insertAdjacentHTML("afterend", data);
     }
-  })
+  }).then(() => {
+    doReady(urlParams.get("method"))
+  });
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -170,6 +202,7 @@ window.addEventListener('DOMContentLoaded', () => {
         document.querySelector("header").after(createError("Something went wrong. Please try signing in again."))
       }
     }).then(data => {
-      if (data) loadMainElement(urlParams.get("method"), data.client.name);
-    })
+      if (data)
+        loadMainElement(urlParams.get("method"), data.client.name);
+    });
 });
