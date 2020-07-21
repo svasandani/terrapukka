@@ -254,6 +254,34 @@ func AuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, error) {
   return ClientAccessResponse{User: user}, err
 }
 
+// IdentifyClient - Identify a client given a ClientAccessRequest
+func IdentifyClient(cir ClientIdentificationRequest) (ClientIdentificationResponse, error) {
+  if cir.Client.ID == "" {
+    return ClientIdentificationResponse{}, errors.New("required field missing: id")
+  }
+  if cir.Client.RedirectURI == "" {
+    return ClientIdentificationResponse{}, errors.New("required field missing: redirect_uri")
+  }
+
+  sel, err := db.Prepare("SELECT id, identifier, redirect_uri, name FROM clients WHERE identifier LIKE ? AND redirect_uri LIKE ?")
+  defer sel.Close()
+
+  var id int
+  var client Client
+
+  util.CheckError("Error preparing db statement:", err)
+
+  err = sel.QueryRow(cir.Client.ID, cir.Client.RedirectURI).Scan(&id, &client.ID, &client.RedirectURI, &client.Name)
+
+  util.CheckError("Error executing SELECT from clients statement:", err)
+
+  if id == 0 {
+    return ClientIdentificationResponse{}, errors.New("client could not be found")
+  }
+
+  return ClientIdentificationResponse{Client: client}, err
+}
+
 func generateAuthCode(user User) (string) {
   return util.UUID()
 }

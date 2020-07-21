@@ -17,7 +17,17 @@ API MIDDLEWARE HANDLERS
 
 // Middleware - chain all middleware handlers in one nice convenient function :))
 func Middleware(fn func(w http.ResponseWriter, r *http.Request)) (func(w http.ResponseWriter, r *http.Request)) {
-  return PreflightRequestHandler(PostHandler(JSONHandler(fn)))
+  return CorsHandler(PreflightRequestHandler(PostHandler(JSONHandler(fn))))
+}
+
+// CorsHandler - set all CORS headers
+func CorsHandler(fn func(w http.ResponseWriter, r *http.Request)) (func(w http.ResponseWriter, r *http.Request)) {
+  return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+    w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+    fn(w, r)
+  })
 }
 
 // PostHandler - ensure all requests to API are posts
@@ -168,6 +178,37 @@ func AuthorizeClientHandler(w http.ResponseWriter, r *http.Request) {
   util.CheckError("Error authorizing client:", err)
 
   if (resp.User != db.User{}) {
+    json, err := json.Marshal(resp)
+
+    if err != nil {
+      http.Error(w, err.Error(), http.StatusInternalServerError)
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+
+    w.Write(json)
+  } else {
+    util.RespondError(w, 403, err.Error())
+  }
+}
+
+// IdentifyClientHandler - identify a client given ClientIdentificationRequest
+func IdentifyClientHandler(w http.ResponseWriter, r *http.Request) {
+  body, err := ioutil.ReadAll(r.Body)
+
+  util.CheckError("Error reading response body:", err)
+
+  cir := db.ClientIdentificationRequest {}
+  err = json.Unmarshal(body, &cir)
+
+  util.CheckError("Error unmarshalling response JSON:", err)
+
+  resp, err := db.IdentifyClient(cir)
+
+  util.CheckError("Error identifying client:", err)
+
+  if (resp.Client.ID == cir.Client.ID) {
     json, err := json.Marshal(resp)
 
     if err != nil {

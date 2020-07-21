@@ -38,9 +38,19 @@ type ClientAccessRequest struct {
   Client Client `json:"client"`
 }
 
-// ClientAccessResponse - stsruct for responding to client access request
+// ClientAccessResponse - struct for responding to client access request
 type ClientAccessResponse struct {
   User User `json:"user"`
+}
+
+// ClientIdentificationRequest - struct for requesting client name
+type ClientIdentificationRequest struct {
+  Client Client `json:"client"`
+}
+
+// ClientIdentificationResponse - struct for returning client name
+type ClientIdentificationResponse struct {
+  Client Client `json:"client"`
 }
 
 // Connection - export DBConnection to connect to database

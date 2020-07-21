@@ -1,0 +1,31 @@
+<main>
+  <section id="form">
+    <span aria-hidden="true"></span>
+    <div class="card form-card">
+      <h1>Register for {{service}}</h1>
+      <form>
+        <div class="field">
+          <input type="text" placeholder=" " id="name" autocomplete="name" required />
+          <label for="email">Name</label>
+        </div>
+        <div class="field">
+          <input type="email" placeholder=" " id="email" autocomplete="email" required />
+          <label for="email">Email</label>
+        </div>
+        <div class="field">
+          <input type="password" placeholder=" " id="password" autocomplete="current-password" required />
+          <label for="password">Password</label>
+        </div>
+        <div class="field">
+          <input type="password" placeholder=" " id="confirm-password" autocomplete="current-password" required />
+          <label for="password">Confirm Password</label>
+        </div>
+        <button type="submit">Register</button>
+        <div class="field register">
+          Already have an account? <a href="" class="sign-in-link">Sign in here.</a>
+        </div>
+      </form>
+    </div>
+    <span aria-hidden="true"></span>
+  </section>
+</main>
