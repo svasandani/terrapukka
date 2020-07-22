@@ -36,7 +36,7 @@ A Go OAuth provider for TerraLing. Currently in development.
 - That's literally it
 
 ## Testing
-- Use Go's inbuilt `testing` package, like so:
+- Use Go's inbuilt `testing` package
 
   `$ go test ./...`
 
