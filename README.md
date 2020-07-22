@@ -36,7 +36,9 @@ A Go OAuth provider for TerraLing. Currently in development.
 - That's literally it
 
 ## Testing
-No tests have currently been written. See [#3](https://github.com/svasandani/terrapukka/issues/3).
+- Use Go's inbuilt `testing` package, like so:
+
+  `$ go test ./...`
 
 ## Endpoints
 The service currently has endpoints for registering `Clients` and `Users`, authorizing `Users`, and granting `User` data access (in this case, their names and emails) to `Clients`.
