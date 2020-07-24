@@ -42,7 +42,8 @@ html {
 }
 
 h1 {
-  font-family: 'Quicksand';
+  font-family: 'Epilogue';
+  font-weight: 700;
   font-size: 3em;
   margin-bottom: 0.5em;
 }
