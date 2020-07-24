@@ -8,7 +8,7 @@ const API = "http://192.168.0.20:3000/api/";
 const errorDict = {
   "password too short; minimum 8 alphanumeric characters": "Your password is too insecure. Please use a password longer than 8 characters.",
   "client could not be found": "Something went wrong. Try going back to the previous page and signing in again.",
-  "user could not be found": "Email or password incorrect. Please try again.",
+  "user email or password is incorrect": "Email or password incorrect. Please try again.",
   "invalid field: email": "Your email appears to be invalid. Please try again.",
   "required field missing: response_type": "Something went wrong. Try going back to the previous page and signing in again.",
   "required field missing: client_id": "Something went wrong. Try going back to the previous page and signing in again.",
@@ -149,7 +149,7 @@ function appendError(el) {
   if (errors.length > 2) {
     removeElement(errors[errors.length - 1]);
   }
-  let head = card.querySelector("h1");
+  let head = document.querySelector("h1");
   head.after(el);
   return el;
 }
