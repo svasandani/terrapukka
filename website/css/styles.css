@@ -22,7 +22,9 @@ body {
   --lighter: #ffffff;
   --dark: #161616;
   --light-color: #6ca3ff89;
+  --highlight-color: #ff6584;
   --dark-color: #161c2b;
+  --catchy-color: #f3e63f;
   --nav-text: var(--light);
   --nav-bg: var(--dark-color);
   --body-text: var(--dark);
@@ -244,7 +246,7 @@ input:-webkit-autofill {
   border-color: var(--light-color);
 }
 
-button {
+/* button {
   margin-top: 2rem;
   font-family: inherit;
   padding: 10px;
@@ -261,6 +263,30 @@ button:hover {
   color: var(--dark);
   transition: 0.1s ease-in;
   box-shadow: none;
+} */
+button {
+  display: block;
+  border: none;
+  font-family: 'Epilogue';
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: none;
+  color: var(--dark-color);
+  border-radius: 3px;
+  background: var(--catchy-color);
+  margin-top: 2rem;
+  padding: 15px;
+  padding-top: 18px;
+  transition: 0.1s linear;
+  width: auto;
+  text-align: center;
+}
+
+button:hover {
+  cursor: pointer;
+  box-shadow: none;
+  background: var(--highlight-color);
+  transition: 0.1s linear;
 }
 
 .register {
