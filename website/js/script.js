@@ -3,7 +3,7 @@ var card = document.querySelector(".sign-in-card");
 let urlParams = new URLSearchParams(window.location.search);
 let responseOK = false;
 
-const API = "http://192.168.0.20:3000/api/";
+const API = "http://localhost:3000/api/";
 
 const errorDict = {
   "password too short; minimum 8 alphanumeric characters": "Your password is too insecure. Please use a password longer than 8 characters.",
