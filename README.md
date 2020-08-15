@@ -186,7 +186,9 @@ Endpoints will only accept `POST` requests, and must contain `JSON` payloads. Th
 
       "name": user's name,
 
-      "email": user's email
+      "email": user's email,
+
+      "roles": array of user's roles, if any
 
     }
 
