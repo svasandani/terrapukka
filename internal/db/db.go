@@ -261,12 +261,12 @@ func identityAuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, err
 
 	timeset = timeset.Add(15 * time.Minute)
 
-	if time.Now().After(timeset) {
-		return ClientAccessResponse{}, errors.New("auth code expired, please sign in again")
-	}
-
 	if userid == 0 {
 		return ClientAccessResponse{}, errors.New("user could not be found")
+	}
+
+	if time.Now().After(timeset) {
+		return ClientAccessResponse{}, errors.New("auth code expired, please sign in again")
 	}
 
 	sel, err = db.Prepare("SELECT * FROM roles WHERE user_id=?")
