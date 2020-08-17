@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"time"
 
 	"database/sql"
 
@@ -26,7 +27,7 @@ var er *regexp.Regexp = regexp.MustCompile(ers)
 
 // ConnectDB - connect to the database.
 func ConnectDB(dbConn Connection) *sql.DB {
-	conn := fmt.Sprintf("%v:%v@/%v", dbConn.User, dbConn.Password, dbConn.Database)
+	conn := fmt.Sprintf("%v:%v@/%v?parseTime=true", dbConn.User, dbConn.Password, dbConn.Database)
 
 	dbLocal, err := sql.Open("mysql", conn)
 
@@ -78,11 +79,11 @@ func RegisterUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, erro
 		return UserAuthorizationResponse{}, errors.New("a problem occurred; please try again later")
 	}
 
-	ins, err := db.Prepare("INSERT INTO users ( name, email, password, auth_code ) VALUES ( ?, ?, ?, ? )")
+	ins, err := db.Prepare("INSERT INTO users ( name, email, password, auth_code, auth_code_generated_at ) VALUES ( ?, ?, ?, ?, ? )")
 
 	util.CheckError("Error preparing db statement:", err)
 
-	_, err = ins.Exec(uar.User.Name, uar.User.Email, password, authCode)
+	_, err = ins.Exec(uar.User.Name, uar.User.Email, password, authCode, time.Now())
 
 	util.CheckError("Error executing INSERT statement:", err)
 
@@ -150,11 +151,11 @@ func codeAuthorizeUser(uar UserAuthorizationRequest) (UserAuthorizationResponse,
 
 	authCode = generateAuthCode(uar.User)
 
-	ins, err := db.Prepare("UPDATE users SET auth_code=? WHERE id=?")
+	ins, err := db.Prepare("UPDATE users SET auth_code=?, auth_code_generated_at=? WHERE id=?")
 
 	util.CheckError("Error preparing db statement:", err)
 
-	_, err = ins.Exec(authCode, userid)
+	_, err = ins.Exec(authCode, time.Now(), userid)
 
 	util.CheckError("Error executing INSERT statement:", err)
 
@@ -202,14 +203,6 @@ func RegisterClient(client Client) (Client, error) {
 
 // AuthorizeClient - Authorize the client given a ClientAccessRequest
 func AuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, error) {
-	if car.GrantType == "identity" {
-		return identityAuthorizeClient(car)
-	} else {
-		return ClientAccessResponse{}, fmt.Errorf("unknown grant type: %v", car.GrantType)
-	}
-}
-
-func identityAuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, error) {
 	if car.AuthCode == "" {
 		return ClientAccessResponse{}, errors.New("required field missing: auth_code")
 	}
@@ -224,6 +217,14 @@ func identityAuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, err
 		return ClientAccessResponse{}, errors.New("required field missing: redirect_uri")
 	}
 
+	if car.GrantType == "identity" {
+		return identityAuthorizeClient(car)
+	} else {
+		return ClientAccessResponse{}, fmt.Errorf("unknown grant type: %v", car.GrantType)
+	}
+}
+
+func identityAuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, error) {
 	sel, err := db.Prepare("SELECT id, secret FROM clients WHERE identifier LIKE ? AND redirect_uri LIKE ?")
 	defer sel.Close()
 
@@ -247,15 +248,22 @@ func identityAuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, err
 	}
 
 	var userid int
+	var timeset time.Time
 	var user User
 
-	sel, err = db.Prepare("SELECT id, name, email FROM users WHERE auth_code LIKE ?")
+	sel, err = db.Prepare("SELECT id, name, email, auth_code_generated_at FROM users WHERE auth_code LIKE ?")
 
 	util.CheckError("Error preparing user select db statement:", err)
 
-	err = sel.QueryRow(car.AuthCode).Scan(&userid, &user.Name, &user.Email)
+	err = sel.QueryRow(car.AuthCode).Scan(&userid, &user.Name, &user.Email, &timeset)
 
 	util.CheckError("Error executing SELECT FROM users statement:", err)
+
+	timeset = timeset.Add(15 * time.Minute)
+
+	if time.Now().After(timeset) {
+		return ClientAccessResponse{}, errors.New("auth code expired, please sign in again")
+	}
 
 	if userid == 0 {
 		return ClientAccessResponse{}, errors.New("user could not be found")
@@ -286,7 +294,7 @@ func identityAuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, err
 		user.Roles = append(user.Roles, role)
 	}
 
-	ins, err := db.Prepare("UPDATE users SET auth_code=? WHERE id=?")
+	ins, err := db.Prepare("UPDATE users SET auth_code=?, auth_code_generated_at=NULL WHERE id=?")
 
 	util.CheckError("Error preparing db statement:", err)
 
