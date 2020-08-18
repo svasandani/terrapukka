@@ -142,13 +142,26 @@ func ResetTokenHandler(w http.ResponseWriter, r *http.Request) {
 
 	util.CheckError("Error unmarshalling response JSON:", err)
 
-	_, err := db.ResetTokenUser(urtr)
+	resp, err := db.ResetTokenUser(urtr)
 
 	util.CheckError("Error creating reset password token:", err)
 
 	// send resp via smtp
 
-	util.RespondOK(w)
+	if err != nil {
+		util.RespondError(w, 400, err.Error())
+	} else {
+		json, err := json.Marshal(resp)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			w.Write(json)
+		}
+	}
 }
 
 // ResetHandler - handle reset password requests
@@ -157,20 +170,20 @@ func ResetHandler(w http.ResponseWriter, r *http.Request) {
 
 	util.CheckError("Error reading response body:", err)
 
-	urr := db.UserResetTokenRequest{}
+	urr := db.UserResetRequest{}
 	err = json.Unmarshal(body, &urr)
 
 	util.CheckError("Error unmarshalling response JSON:", err)
 
-	resp, err := db.ResetUser(urr)
+	err = db.ResetUser(urr)
 
 	util.CheckError("Error resetting user password:", err)
 
 	if err != nil {
 		util.RespondError(w, http.StatusInternalServerError, err.Error())
+	} else {
+		util.RespondOK(w)
 	}
-
-	util.RespondOK(w)
 }
 
 // CreateClientHandler - create a new client

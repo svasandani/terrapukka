@@ -203,6 +203,13 @@ func ResetTokenUser(urtr UserResetTokenRequest) (UserResetTokenResponse, error) 
 
 // ResetUser - reset a user's password with the right reset password token
 func ResetUser(urr UserResetRequest) error {
+	if urr.ResetToken == "" {
+		return errors.New("required field missing: reset_token")
+	}
+	if urr.User.Password == "" {
+		return errors.New("required field missing: password")
+	}
+
 	var userid int
 	var timeset time.Time
 
@@ -224,7 +231,23 @@ func ResetUser(urr UserResetRequest) error {
 		return errors.New("reset token expired, please sign in again")
 	}
 
-	ins, err := db.Prepare("UPDATE users SET reset_token=?, auth_code_generated_at=NULL WHERE id=?")
+	password, err := util.HashAndSalt(urr.User.Password)
+
+	util.CheckError("Error salting user password:", err)
+
+	if err != nil {
+		return errors.New("a problem occurred; please try again later")
+	}
+
+	ins, err := db.Prepare("UPDATE users SET password=? WHERE id=?")
+
+	util.CheckError("Error preparing db statement:", err)
+
+	_, err = ins.Exec(password, userid)
+
+	util.CheckError("Error executing INSERT statement:", err)
+
+	ins, err = db.Prepare("UPDATE users SET reset_token=?, reset_token_generated_at=NULL WHERE id=?")
 
 	util.CheckError("Error preparing db statement:", err)
 
