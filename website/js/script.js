@@ -21,13 +21,12 @@ function doReady(method) {
   form = document.querySelector("form");
   card = document.querySelector(".sign-in-card");
 
-  if (method === "register") {
-    urlParams.set("method", "sign-in");
-    console.log(urlParams.toString());
-    document.querySelector(".sign-in-link").href = "//" + location.host + location.pathname + "?" + urlParams.toString();
-  } else {
+  if (method === "sign-in") {
     urlParams.set("method", "register");
     document.querySelector(".register-link").href = "//" + location.host + location.pathname + "?" + urlParams.toString();
+  } else if (method === "register" || method === "reset-token" || method === "reset") {
+    urlParams.set("method", "sign-in");
+    document.querySelector(".sign-in-link").href = "//" + location.host + location.pathname + "?" + urlParams.toString();
   }
   form.addEventListener("submit", (e) => {
     handleSubmission(e, method)
@@ -40,10 +39,80 @@ function handleSubmission(e, method) {
   e.preventDefault();
 
   let name = "";
-  let email = form.querySelector("#email").value;
+  let user = {};
+  
+  if (method === "reset-token") {
+    user.email = form.querySelector("#email").value;
+
+    fetch(API + ("reset_token"), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "user": user
+      })
+    })
+    .then(response => {
+      if (response.status === 200) {
+        response = response.json();
+        responseOK = true;
+        return response;
+      } else {
+        response = response.json();
+        return response;
+      }
+    })
+    .then(data => console.log(data));
+
+    return;
+  }
+
   let password = form.querySelector("#password").value;
   let confirmPassword = "";
-  let user = {};
+
+  if (method === "reset") {
+    confirmPassword = form.querySelector("#confirm-password").value;
+
+    if (confirmPassword !== password) {
+      let el = appendError(createError("Your passwords need to match. Please try again."));
+      setTimeout(() => {
+        removeError(el);
+      }, 4000);
+
+      form.querySelector("#password").value = "";
+      form.querySelector("#confirm-password").value = "";
+
+      return;
+    }
+
+    user.password = password;
+
+    fetch(API + ("reset"), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "reset_token": urlParams.get("reset_token"),
+        "user": user
+      })
+    })
+    .then(response => {
+      if (response.status === 200) {
+        urlParams.set("method", "sign-in");
+        urlParams.delete("reset_token");
+        window.location = "//" + location.host + location.pathname + "?" + urlParams.toString();
+      } else {
+        let el = appendError(createError("Something went wrong. Please try again."));
+        setTimeout(() => {
+          removeError(el);
+        }, 4000);
+      }
+    })
+  }
+
+  let email = form.querySelector("#email").value;
 
   if (method === "register") {
     name = form.querySelector("#name").value;
@@ -159,9 +228,13 @@ function loadMainElement(mode, service) {
 
   if (mode == "register") {
     url = "register.html";
-  } else {
+  } else if (mode == "reset-token") {
+    url = "reset_token.html";
+  } else if (mode == "reset") {
+    url = "reset.html";
+  } else if (mode == "sign-in") {
     url = "sign_in.html";
-  }
+  } 
 
   fetch(url).then(response => response.text()).then(data => {
     let header = document.querySelector("header");
