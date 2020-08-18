@@ -28,8 +28,13 @@ function doReady(method) {
     urlParams.set("method","reset-token");
     document.querySelector(".forgot-password-link").href = "//" + location.host + location.pathname + "?" + urlParams.toString();
   } else if (method === "register" || method === "reset-token" || method === "reset") {
+    let resetToken = urlParams.get("reset_token");
+    urlParams.delete("reset_token");
+
     urlParams.set("method", "sign-in");
     document.querySelector(".sign-in-link").href = "//" + location.host + location.pathname + "?" + urlParams.toString();
+  
+    urlParams.set("reset_token", resetToken);
   }
 
   form.addEventListener("submit", (e) => {
