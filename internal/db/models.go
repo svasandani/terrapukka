@@ -38,6 +38,22 @@ type UserAuthorizationResponse struct {
 	State       string `json:"state"`
 }
 
+// UserResetTokenRequest - struct for responding to password reset requests
+type UserResetTokenRequest struct {
+	User User `json:"user"`
+}
+
+// UserResetTokenResponse - struct to return password reset token via smtp
+type UserResetTokenResponse struct {
+	Token string `json:"token"`
+}
+
+// UserResetRequest - struct for handling password reset with token
+type UserResetRequest struct {
+	Token string `json:"token"`
+	User  User   `json:"user"`
+}
+
 // ClientAccessRequest - struct for clients requesting user data
 type ClientAccessRequest struct {
 	GrantType string `json:"grant_type"`

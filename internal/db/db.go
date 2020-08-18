@@ -104,9 +104,9 @@ func RegisterUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, erro
 func AuthorizeUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, error) {
 	if uar.ResponseType == "code" {
 		return codeAuthorizeUser(uar)
-	} else {
-		return UserAuthorizationResponse{}, fmt.Errorf("unknown response type: %v", uar.ResponseType)
 	}
+
+	return UserAuthorizationResponse{}, fmt.Errorf("unknown response type: %v", uar.ResponseType)
 }
 
 func codeAuthorizeUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, error) {
@@ -219,9 +219,9 @@ func AuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, error) {
 
 	if car.GrantType == "identity" {
 		return identityAuthorizeClient(car)
-	} else {
-		return ClientAccessResponse{}, fmt.Errorf("unknown grant type: %v", car.GrantType)
 	}
+
+	return ClientAccessResponse{}, fmt.Errorf("unknown grant type: %v", car.GrantType)
 }
 
 func identityAuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, error) {
