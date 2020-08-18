@@ -195,7 +195,7 @@ func ResetTokenUser(urtr UserResetTokenRequest) (UserResetTokenResponse, error) 
 	util.CheckError("Error executing INSERT statement:", err)
 
 	if userid != 0 {
-		return UserResetTokenResponse{ResetToken: resetToken}, nil
+		return UserResetTokenResponse{ClientID: urtr.ClientID, RedirectURI: urtr.RedirectURI, ResetToken: resetToken}, nil
 	}
 
 	return UserResetTokenResponse{}, errors.New("user could not be found")

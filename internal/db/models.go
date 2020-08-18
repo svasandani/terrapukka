@@ -40,12 +40,16 @@ type UserAuthorizationResponse struct {
 
 // UserResetTokenRequest - struct for responding to password reset requests
 type UserResetTokenRequest struct {
-	User User `json:"user"`
+	ClientID    string `json:"client_id"`
+	RedirectURI string `json:"redirect_uri"`
+	User        User   `json:"user"`
 }
 
 // UserResetTokenResponse - struct to return password reset token via smtp
 type UserResetTokenResponse struct {
-	ResetToken string `json:"token"`
+	ClientID    string `json:"client_id"`
+	RedirectURI string `json:"redirect_uri"`
+	ResetToken  string `json:"token"`
 }
 
 // UserResetRequest - struct for handling password reset with token

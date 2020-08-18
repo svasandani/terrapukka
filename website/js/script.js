@@ -54,6 +54,8 @@ function handleSubmission(e, method) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        "redirect_uri": urlParams.get("redirect_uri"),
+        "client_id": urlParams.get("client_id"),
         "user": user
       })
     })
@@ -114,6 +116,8 @@ function handleSubmission(e, method) {
         }, 4000);
       }
     })
+
+    return;
   }
 
   let email = form.querySelector("#email").value;
