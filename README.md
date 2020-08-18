@@ -231,6 +231,44 @@ Endpoints will only accept `POST` requests, and must contain `JSON` payloads. Th
   }
   ```
 
+### Password Management
+
+#### `api/reset_token`
+
+  Generate a reset password token for a `user` given their `email`. Takes in the following structure, with fields required as marked:
+  ```yaml
+  {
+
+    "user": user model containing email, required {
+
+      "email": user's email, required
+
+    }
+
+  }
+  ```
+
+  Returns an HTTP OK on success, or an error otherwise.
+
+#### `api/reset`
+
+  Reset the password of a `user` given the correct `reset_token`. Takes in the following structure, with fields required as marked:
+  ```yaml
+  {
+
+    "reset_token": reset password token, required,
+
+    "user": user model containing email, required {
+
+      "password": user's new password, required
+
+    }
+
+  }
+  ```
+
+  Returns an HTTP OK on success, or an error otherwise.
+
 ## Contributing
 Look through the issues and read through the code to see what needs help. Some tags:
 - `@TODO` - problems that are attached to issues.
