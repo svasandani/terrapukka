@@ -151,11 +151,11 @@ func codeAuthorizeUser(uar UserAuthorizationRequest) (UserAuthorizationResponse,
 
 	authCode = generateUUID(uar.User)
 
-	ins, err := db.Prepare("UPDATE users SET auth_code=?, auth_code_generated_at=? WHERE id=?")
+	ins, err := db.Prepare("UPDATE users SET auth_code=?, auth_code_generated_at=?, auth_code_client_id=? WHERE id=?")
 
 	util.CheckError("Error preparing db statement:", err)
 
-	_, err = ins.Exec(authCode, time.Now(), userid)
+	_, err = ins.Exec(authCode, time.Now(), id, userid)
 
 	util.CheckError("Error executing INSERT statement:", err)
 
@@ -340,18 +340,23 @@ func identityAuthorizeClient(car ClientAccessRequest) (ClientAccessResponse, err
 	}
 
 	var userid int
+	var clientid int
 	var timeset time.Time
 	var user User
 
-	sel, err = db.Prepare("SELECT id, name, email, auth_code_generated_at FROM users WHERE auth_code LIKE ?")
+	sel, err = db.Prepare("SELECT id, name, email, auth_code_generated_at, auth_code_client_id FROM users WHERE auth_code LIKE ?")
 
 	util.CheckError("Error preparing user select db statement:", err)
 
-	err = sel.QueryRow(car.AuthCode).Scan(&userid, &user.Name, &user.Email, &timeset)
+	err = sel.QueryRow(car.AuthCode).Scan(&userid, &user.Name, &user.Email, &timeset, &clientid)
 
 	util.CheckError("Error executing SELECT FROM users statement:", err)
 
 	timeset = timeset.Add(15 * time.Minute)
+
+	if clientid != id {
+		return ClientAccessResponse{}, errors.New("incorrect client")
+	}
 
 	if userid == 0 {
 		return ClientAccessResponse{}, errors.New("user could not be found")
