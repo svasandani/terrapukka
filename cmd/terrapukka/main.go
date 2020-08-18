@@ -14,9 +14,15 @@ func main() {
 	dbpass := flag.String("dbPass", "terrapukka", "Password for MySQL")
 	dbname := flag.String("dbName", "terrapukka", "Name of MySQL database")
 
+	smtpfrom := flag.String("smtpFrom", "terrapukka", "Username for SMTP")
+	smtppass := flag.String("smtpPass", "terrapukka", "Username for SMTP")
+	pukkalink := flag.String("pukkaLink", "https://pukka.terraling.com/", "Link for email redirect")
+
 	port := flag.String("port", "3000", "Port to serve Terrapukka")
 
 	flag.Parse()
+
+	api.SetupSMTP(*smtpfrom, *smtppass, *pukkalink)
 
 	database := db.ConnectDB(db.Connection{User: *dbuser, Password: *dbpass, Database: *dbname})
 	defer database.Close()

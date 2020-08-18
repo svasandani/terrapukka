@@ -49,6 +49,7 @@ type UserResetTokenRequest struct {
 type UserResetTokenResponse struct {
 	ClientID    string `json:"client_id"`
 	RedirectURI string `json:"redirect_uri"`
+	User        User   `json:"user"`
 	ResetToken  string `json:"token"`
 }
 

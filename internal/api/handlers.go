@@ -4,10 +4,22 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"net/smtp"
 
 	"github.com/svasandani/terrapukka/internal/db"
 	"github.com/svasandani/terrapukka/internal/util"
 )
+
+var smtpFrom string
+var smtpPass string
+var pukkaLink string
+
+// SetupSMTP - set global smtp variables to send email via smtp
+func SetupSMTP(smtpfrom string, smtppass string, pukkalink string) {
+	smtpFrom = smtpfrom
+	smtpPass = smtppass
+	pukkaLink = pukkalink
+}
 
 /**************************************************************
 
@@ -146,21 +158,20 @@ func ResetTokenHandler(w http.ResponseWriter, r *http.Request) {
 
 	util.CheckError("Error creating reset password token:", err)
 
-	// send resp via smtp
+	link := pukkaLink + "?client_id=" + resp.ClientID + "&redirect_uri=" + resp.RedirectURI + "&reset_token=" + resp.ResetToken + "&method=reset"
+
+	msg := "From: " + smtpFrom + "\n" +
+		"To: " + resp.User.Email + "\n" +
+		"Subject: Terraling - Reset your password\n" +
+		"MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n" +
+		"Please click <a href=\"" + link + "\">this link</a> to reset your password. If that doesn't work, try copying and pasting the following into your browser:\n" + link + "\n\nThanks!\nThe Terraling Team."
+
+	err = smtp.SendMail("smtp.gmail.com:587", smtp.PlainAuth("", smtpFrom, smtpPass, "smtp.gmail.com"), smtpFrom, []string{resp.User.Email}, []byte(msg))
 
 	if err != nil {
 		util.RespondError(w, 400, err.Error())
 	} else {
-		json, err := json.Marshal(resp)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		} else {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-
-			w.Write(json)
-		}
+		util.RespondOK(w)
 	}
 }
 

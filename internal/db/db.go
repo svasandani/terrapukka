@@ -177,6 +177,9 @@ func ResetTokenUser(urtr UserResetTokenRequest) (UserResetTokenResponse, error) 
 
 	var userid int
 	var resetToken string
+	var user User
+
+	user.Email = urtr.User.Email
 
 	util.CheckError("Error preparing db statement:", err)
 
@@ -195,7 +198,7 @@ func ResetTokenUser(urtr UserResetTokenRequest) (UserResetTokenResponse, error) 
 	util.CheckError("Error executing INSERT statement:", err)
 
 	if userid != 0 {
-		return UserResetTokenResponse{ClientID: urtr.ClientID, RedirectURI: urtr.RedirectURI, ResetToken: resetToken}, nil
+		return UserResetTokenResponse{ClientID: urtr.ClientID, RedirectURI: urtr.RedirectURI, User: user, ResetToken: resetToken}, nil
 	}
 
 	return UserResetTokenResponse{}, errors.New("user could not be found")
