@@ -18,6 +18,10 @@ const errorDict = {
 }
 
 function doReady(method) {
+  if (method === "success") {
+    return;
+  }
+
   form = document.querySelector("form");
   card = document.querySelector(".sign-in-card");
 
@@ -35,7 +39,7 @@ function doReady(method) {
     document.querySelector(".sign-in-link").href = "//" + location.host + location.pathname + "?" + urlParams.toString();
   
     urlParams.set("reset_token", resetToken);
-  }
+  } 
 
   form.addEventListener("submit", (e) => {
     handleSubmission(e, method)
@@ -66,9 +70,8 @@ function handleSubmission(e, method) {
     })
     .then(response => {
       if (response.status === 200) {
-        response = response.json();
-        responseOK = true;
-        return response;
+        urlParams.set("method", "success");
+        window.location.href = "//" + location.host + location.pathname + "?" + urlParams.toString();
       } else {
         response = response.json();
         return response;
@@ -239,6 +242,7 @@ function appendError(el) {
 function loadMainElement(mode, service) {
   let url = "";
 
+  
   if (mode == "register") {
     url = "register.html";
   } else if (mode == "reset-token") {
@@ -247,7 +251,10 @@ function loadMainElement(mode, service) {
     url = "reset.html";
   } else if (mode == "sign-in") {
     url = "sign_in.html";
-  } 
+  } else if (mode == "success") {
+    url = "success.html";
+  }
+
 
   fetch(url).then(response => response.text()).then(data => {
     let header = document.querySelector("header");
