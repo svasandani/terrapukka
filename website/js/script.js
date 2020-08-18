@@ -24,10 +24,14 @@ function doReady(method) {
   if (method === "sign-in") {
     urlParams.set("method", "register");
     document.querySelector(".register-link").href = "//" + location.host + location.pathname + "?" + urlParams.toString();
+
+    urlParams.set("method","reset-token");
+    document.querySelector(".forgot-password-link").href = "//" + location.host + location.pathname + "?" + urlParams.toString();
   } else if (method === "register" || method === "reset-token" || method === "reset") {
     urlParams.set("method", "sign-in");
     document.querySelector(".sign-in-link").href = "//" + location.host + location.pathname + "?" + urlParams.toString();
   }
+
   form.addEventListener("submit", (e) => {
     handleSubmission(e, method)
   }, false);
