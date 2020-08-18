@@ -131,6 +131,48 @@ func AuthorizeUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ResetTokenHandler - handle requests for a reset password token
+func ResetTokenHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+
+	util.CheckError("Error reading response body:", err)
+
+	urtr := db.UserResetTokenRequest{}
+	err = json.Unmarshal(body, &urtr)
+
+	util.CheckError("Error unmarshalling response JSON:", err)
+
+	_, err := db.ResetTokenUser(urtr)
+
+	util.CheckError("Error creating reset password token:", err)
+
+	// send resp via smtp
+
+	util.RespondOK(w)
+}
+
+// ResetHandler - handle reset password requests
+func ResetHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+
+	util.CheckError("Error reading response body:", err)
+
+	urr := db.UserResetTokenRequest{}
+	err = json.Unmarshal(body, &urr)
+
+	util.CheckError("Error unmarshalling response JSON:", err)
+
+	resp, err := db.ResetUser(urr)
+
+	util.CheckError("Error resetting user password:", err)
+
+	if err != nil {
+		util.RespondError(w, http.StatusInternalServerError, err.Error())
+	}
+
+	util.RespondOK(w)
+}
+
 // CreateClientHandler - create a new client
 func CreateClientHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
@@ -142,12 +184,12 @@ func CreateClientHandler(w http.ResponseWriter, r *http.Request) {
 
 	util.CheckError("Error unmarshalling response JSON:", err)
 
-	client, err = db.RegisterClient(client)
+	resp, err := db.RegisterClient(client)
 
 	util.CheckError("Error authorizing user:", err)
 
 	if client.ID != "" {
-		json, err := json.Marshal(client)
+		json, err := json.Marshal(resp)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
