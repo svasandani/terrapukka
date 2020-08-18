@@ -239,6 +239,10 @@ Endpoints will only accept `POST` requests, and must contain `JSON` payloads. Th
   ```yaml
   {
 
+    "client_id": client's ID, returned at registration, required,
+
+    "redirect_uri": URI to redirect the user to after successful registration, must match registered URI, required,
+
     "user": user model containing email, required {
 
       "email": user's email, required
