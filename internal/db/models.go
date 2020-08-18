@@ -45,13 +45,13 @@ type UserResetTokenRequest struct {
 
 // UserResetTokenResponse - struct to return password reset token via smtp
 type UserResetTokenResponse struct {
-	Token string `json:"token"`
+	ResetToken string `json:"token"`
 }
 
 // UserResetRequest - struct for handling password reset with token
 type UserResetRequest struct {
-	Token string `json:"token"`
-	User  User   `json:"user"`
+	ResetToken string `json:"reset_token"`
+	User       User   `json:"user"`
 }
 
 // ClientAccessRequest - struct for clients requesting user data

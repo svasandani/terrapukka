@@ -70,7 +70,7 @@ func RegisterUser(uar UserAuthorizationRequest) (UserAuthorizationResponse, erro
 		return UserAuthorizationResponse{}, errors.New("client could not be found")
 	}
 
-	authCode := generateAuthCode(uar.User)
+	authCode := generateUUID(uar.User)
 	password, err := util.HashAndSalt(uar.User.Password)
 
 	util.CheckError("Error salting user password:", err)
@@ -149,7 +149,7 @@ func codeAuthorizeUser(uar UserAuthorizationRequest) (UserAuthorizationResponse,
 		return UserAuthorizationResponse{}, errors.New("user email or password is incorrect")
 	}
 
-	authCode = generateAuthCode(uar.User)
+	authCode = generateUUID(uar.User)
 
 	ins, err := db.Prepare("UPDATE users SET auth_code=?, auth_code_generated_at=? WHERE id=?")
 
@@ -166,7 +166,76 @@ func codeAuthorizeUser(uar UserAuthorizationRequest) (UserAuthorizationResponse,
 	return UserAuthorizationResponse{}, errors.New("user could not be found")
 }
 
-// RegisterClient - Register the client into the database.
+// ResetTokenUser - generate a reset password token for a User
+func ResetTokenUser(urtr UserResetTokenRequest) (UserResetTokenResponse, error) {
+	if urtr.User.Email == "" {
+		return UserResetTokenResponse{}, errors.New("required field missing: email")
+	}
+
+	sel, err := db.Prepare("SELECT id FROM users WHERE email LIKE ?")
+	defer sel.Close()
+
+	var userid int
+	var resetToken string
+
+	util.CheckError("Error preparing db statement:", err)
+
+	err = sel.QueryRow(urtr.User.Email).Scan(&userid)
+
+	util.CheckError("Error executing SELECT statement:", err)
+
+	resetToken = generateUUID(urtr.User)
+
+	ins, err := db.Prepare("UPDATE users SET reset_token=?, reset_token_generated_at=? WHERE id=?")
+
+	util.CheckError("Error preparing db statement:", err)
+
+	_, err = ins.Exec(resetToken, time.Now(), userid)
+
+	util.CheckError("Error executing INSERT statement:", err)
+
+	if userid != 0 {
+		return UserResetTokenResponse{ResetToken: resetToken}, nil
+	}
+
+	return UserResetTokenResponse{}, errors.New("user could not be found")
+}
+
+// ResetUser - reset a user's password with the right reset password token
+func ResetUser(urr UserResetRequest) error {
+	var userid int
+	var timeset time.Time
+
+	sel, err := db.Prepare("SELECT id, reset_token_generated_at FROM users WHERE reset_token LIKE ?")
+
+	util.CheckError("Error preparing user select db statement:", err)
+
+	err = sel.QueryRow(urr.ResetToken).Scan(&userid, &timeset)
+
+	util.CheckError("Error executing SELECT FROM users statement:", err)
+
+	timeset = timeset.Add(15 * time.Minute)
+
+	if userid == 0 {
+		return errors.New("user could not be found")
+	}
+
+	if time.Now().After(timeset) {
+		return errors.New("reset token expired, please sign in again")
+	}
+
+	ins, err := db.Prepare("UPDATE users SET reset_token=?, auth_code_generated_at=NULL WHERE id=?")
+
+	util.CheckError("Error preparing db statement:", err)
+
+	_, err = ins.Exec("", userid)
+
+	util.CheckError("Error executing INSERT statement:", err)
+
+	return err
+}
+
+// RegisterClient - Register the client into the database
 func RegisterClient(client Client) (Client, error) {
 	// validate user
 	if client.Name == "" {
@@ -333,7 +402,7 @@ func IdentifyClient(cir ClientIdentificationRequest) (ClientIdentificationRespon
 	return ClientIdentificationResponse{Client: client}, err
 }
 
-func generateAuthCode(user User) string {
+func generateUUID(user User) string {
 	return util.UUID()
 }
 
