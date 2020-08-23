@@ -1,4 +1,4 @@
-<h1 align="center">Terra<i>pukka</i><br>
+<h1 align="center">Terra<i>pukka<sup><a href="#def">1</a></sup></i><br>
 <img src="https://img.shields.io/github/languages/code-size/svasandani/terrapukka" />
 <img src="https://img.shields.io/github/license/svasandani/terrapukka" />
 <img src="https://img.shields.io/github/last-commit/svasandani/terrapukka" />
@@ -277,3 +277,7 @@ Endpoints will only accept `POST` requests, and must contain `JSON` payloads. Th
 Look through the issues and read through the code to see what needs help. Some tags:
 - `@TODO` - problems that are attached to issues.
 - `@QOL` - problems that aren't major and so may not be attached to issues.
+
+## Footnotes
+
+<a name="def">1. <i>British English (inf)</i>; <b>pukka</b>:  genuine.</a>
